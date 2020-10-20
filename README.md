@@ -13,7 +13,7 @@ Table of contents
 -----------------
 
 - [Directives](#directives)
-- [Example](#example)
+- [An example](#an-example)
 - [Building and installation](#building-and-installation)
 
 Directives
@@ -28,8 +28,8 @@ for the current location error log. The *R* directives require the request
 context, and therefore they are heavier than the *simple* directives and must be
 avoided when Nginx logs all messages into a single destination.
 
-Example
--------
+An example
+----------
 
 ```nginx
 user                    nobody;
@@ -77,8 +77,8 @@ http {
 There is a global error log */tmp/nginx-test-error-g.log* where directive
 `logInfo` will write to, and an error log */tmp/nginx-test-error.log* declared
 inside the *http* clause where directives `logInfoR` will write to. Notice that
-*R* directives require variable `$_r_ptr` to properly log messages: missing this
-variable may crash the worker process!
+the *R* directives require variable `$_r_ptr` to properly log messages: missing
+this variable may lead to a crash of the worker process!
 
 Let's watch the log files,
 
@@ -124,11 +124,16 @@ $ cabal v1-install
 
 (you may prefer the *new-style* cabal command *v2-install*).
 
-Then compile the Nginx source code and install *ngx_log_plugin.so*.
+Then compile the Nginx source code, and install *ngx_log_plugin.so*.
 
 ```ShellSession
 $ ./configure --add-dynamic-module=/path/to/nginx-log-plugin/sources
 $ make modules
+```
+
+and install *ngx_log_plugin.so* being a superuser.
+
+```ShellSession
 # cp objs/ngx_log_plugin.so /var/lib/nginx/hslibs/libngx_log_plugin.so
 ```
 
