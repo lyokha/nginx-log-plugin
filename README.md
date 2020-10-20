@@ -124,7 +124,7 @@ $ cabal v1-install
 
 (you may prefer the *new-style* cabal command *v2-install*).
 
-Then compile the Nginx source code, and install *ngx_log_plugin.so*.
+Then compile the Nginx source code,
 
 ```ShellSession
 $ ./configure --add-dynamic-module=/path/to/nginx-log-plugin/sources
