@@ -7,7 +7,7 @@ compiles to a shared library that gets loaded in Nginx using directive
 [*nginx-haskell-module*](https://github.com/lyokha/nginx-haskell-module). Let's
 call this *plugin*. The plugin provides support for logging messages from
 configuration files in the run-time using the native Nginx logging mechanism
-available from directive `error_log`.
+available with directive `error_log`.
 
 Table of contents
 -----------------
@@ -23,10 +23,11 @@ There are two flavours of logging directives. Directives `logStderr`,
 `logEmerg`, `logAlert`, `logCrit`, `logErr`, `logWarn`, `logNotice`, `logInfo`,
 and `logDebug` write to the global error log associated with the main
 configuration level (i.e. the level outside of the *http* clause), while their
-*R*-counterparts `logStderrR`, `logEmergR` and so forth write to the specific
-for the current location error log. The *R* directives require the request
-context, and therefore they are heavier than the *simple* directives and must be
-avoided when Nginx logs all messages into a single destination.
+*R*-counterparts `logStderrR`, `logEmergR`, `logAlertR`, `logCritR`, `logErrR`,
+`logWarnR`, `logNoticeR`, `logInfoR`, and `logDebugR` write to the specific for
+the current location error log. The *R* directives require the request context,
+and therefore they are heavier than the *simple* directives and must be avoided
+when Nginx logs all messages into a single destination.
 
 An example
 ----------
@@ -96,6 +97,7 @@ Ok
 In the first terminal the following lines should appear.
 
 ```ShellSession
+==> /tmp/nginx-test-error.log <==
 2020/10/20 19:17:55 [info] 53242#0: *1 Got query "a=hello&b=world", client: 127.0.0.1, server: main, request: "GET /?a=hello&b=world HTTP/1.1", host: "localhost:8010"
 2020/10/20 19:17:55 [info] 53242#0: *1 Got a = "hello", client: 127.0.0.1, server: main, request: "GET /?a=hello&b=world HTTP/1.1", host: "localhost:8010"
 
@@ -113,7 +115,7 @@ In the first terminal the following lines should appear.
 Building and installation
 -------------------------
 
-The plugin contains Haskell and C parts, and thus requires *ghc*, *cabal*,
+The plugin contains Haskell and C parts, and thus it requires *ghc*, *cabal*,
 *gcc*, and a directory with the Nginx sources.
 
 To install module *NgxExport.Log*, run
@@ -124,9 +126,10 @@ $ cabal v1-install
 
 (you may prefer the *new-style* cabal command *v2-install*).
 
-Then compile the Nginx source code,
+Then, from the directory with the Nginx source code, compile,
 
 ```ShellSession
+$ cd /path/to/nginx/sources
 $ ./configure --add-dynamic-module=/path/to/nginx-log-plugin/sources
 $ make modules
 ```
