@@ -126,10 +126,15 @@ $ cabal v1-install
 
 (you may prefer the *new-style* cabal command *v2-install*).
 
-Then, from the directory with the Nginx source code, compile,
+Then go to the directory with the Nginx source code,
 
 ```ShellSession
 $ cd /path/to/nginx/sources
+```
+
+compile,
+
+```ShellSession
 $ ./configure --add-dynamic-module=/path/to/nginx-log-plugin/sources
 $ make modules
 ```
