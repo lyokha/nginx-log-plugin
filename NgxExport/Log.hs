@@ -1,5 +1,4 @@
-{-# LANGUAGE TemplateHaskell, ForeignFunctionInterface #-}
-{-# LANGUAGE OverloadedStrings, TypeApplications #-}
+{-# LANGUAGE TemplateHaskell, ForeignFunctionInterface, OverloadedStrings #-}
 
 module NgxExport.Log where
 
