@@ -12,12 +12,12 @@ available with directive `error_log`.
 Table of contents
 -----------------
 
-- [Directives and handlers](#directives-and-handlers)
+- [Directives and custom handlers](#directives-and-custom-handlers)
 - [An example](#an-example)
 - [Building and installation](#building-and-installation)
 
-Directives and handlers
------------------------
+Directives and custom handlers
+------------------------------
 
 There are two flavours of logging directives. Directives `logStderr`,
 `logEmerg`, `logAlert`, `logCrit`, `logErr`, `logWarn`, `logNotice`, `logInfo`,
@@ -26,8 +26,8 @@ configuration level (i.e. the level outside of the *http* clause), while their
 *R*-counterparts `logStderrR`, `logEmergR`, `logAlertR`, `logCritR`, `logErrR`,
 `logWarnR`, `logNoticeR`, `logInfoR`, and `logDebugR` write to the specific for
 the current location error log. The *R* directives require the request context,
-and therefore they are heavier than the *simple* directives and must be avoided
-when Nginx logs all messages into a single destination.
+and therefore they are heavier in use and speed than the *simple* directives and
+should be avoided when Nginx logs all messages into a single destination.
 
 Haskell functions of the same names as the logging directives can be used in
 custom Haskell handlers.
@@ -65,6 +65,10 @@ tee msg = do
 
 ngxExportAsyncHandler 'tee
 ```
+
+Here we used function `logInfo` to make asynchronous content handler *tee* that
+echoes its argument both in the response body and the global error log. All
+Haskell handlers for using in logging directives are exported automatically.
 
 ###### File *nginx.conf*
 
@@ -119,7 +123,7 @@ There is a global error log */tmp/nginx-test-error-g.log* where directive
 `logInfo` will write to, and an error log */tmp/nginx-test-error.log* declared
 inside the *http* clause where directives `logInfoR` will write to. Notice that
 the *R* directives require variable `$_r_ptr` to properly log messages: missing
-this variable may lead to a crash of the worker process!
+this variable may lead to crashes of Nginx worker processes!
 
 ###### A simple test
 
