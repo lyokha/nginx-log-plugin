@@ -26,7 +26,9 @@ configuration level (i.e. the level outside of the *http* clause), while their
 *R*-counterparts `logStderrR`, `logEmergR`, `logAlertR`, `logCritR`, `logErrR`,
 `logWarnR`, `logNoticeR`, `logInfoR`, and `logDebugR` write to the specific for
 the current location error log. The *R* directives require the request context,
-and therefore they are heavier in use and speed than the *simple* directives.
+and therefore they are heavier in use and speed than the *simple* (or *global*)
+logging directives, however they log the useful request context data which is
+unavailable in the global context.
 
 Haskell functions of the same names as the logging directives can be used in
 custom Haskell handlers.
@@ -69,8 +71,8 @@ ngxExportAsyncHandler 'tee
 ```
 
 Here we used function `logInfoR` to make asynchronous content handler *tee* that
-echoes its argument both in the response body and the global error log. All
-Haskell handlers for using in logging directives are exported automatically.
+echoes its argument both in the response body and the error log. All Haskell
+handlers for using in logging directives are exported automatically.
 
 ###### File *nginx.conf*
 
@@ -125,8 +127,8 @@ http {
 There is a global error log */tmp/nginx-test-error-g.log* where directive
 `logInfo` will write to, and an error log */tmp/nginx-test-error.log* declared
 inside the *http* clause where directives `logInfoR` will write to. Notice that
-the *R* directives require variable `$_r_ptr` to properly log messages: missing
-this variable may lead to crashes of Nginx worker processes!
+the *R* directives and handlers require variable `$_r_ptr` to properly log
+messages: missing this variable may lead to crashes of Nginx worker processes!
 
 ###### A simple test
 
@@ -149,30 +151,28 @@ In the first terminal the following lines should appear.
 
 ```ShellSession
 ==> /tmp/nginx-test-error.log <==
-2020/10/21 10:19:24 [info] 7672#0: *1 Got query "a=hello&b=world", client: 127.0.0.1, server: main, request: "GET /?a=hello&b=world HTTP/1.1", host: "localhost:8010"
-2020/10/21 10:19:24 [info] 7672#0: *1 Got a = "hello", client: 127.0.0.1, server: main, request: "GET /?a=hello&b=world HTTP/1.1", host: "localhost:8010"
+2020/10/21 12:33:28 [info] 20676#0: *1 Got query "a=hello&b=world", client: 127.0.0.1, server: main, request: "GET /?a=hello&b=world HTTP/1.1", host: "localhost:8010"
+2020/10/21 12:33:28 [info] 20676#0: *1 Got a = "hello", client: 127.0.0.1, server: main, request: "GET /?a=hello&b=world HTTP/1.1", host: "localhost:8010"
 
 ==> /tmp/nginx-test-access.log <==
-127.0.0.1 - - [21/Oct/2020:10:19:24 +0300] "GET /?a=hello&b=world HTTP/1.1" 200 13 "-" "curl/7.69.1"
+127.0.0.1 - - [21/Oct/2020:12:33:28 +0300] "GET /?a=hello&b=world HTTP/1.1" 200 13 "-" "curl/7.69.1"
 
 ==> /tmp/nginx-test-error-g.log <==
-2020/10/21 10:19:24 [info] 7672#0: Write in global log!
+2020/10/21 12:33:28 [info] 20676#0: Write in global log!
 
 ==> /tmp/nginx-test-error.log <==
-2020/10/21 10:19:24 [info] 7672#0: *1 Request finished while logging request, client: 127.0.0.1, server: main, request: "GET /?a=hello&b=world HTTP/1.1", host: "localhost:8010"
-2020/10/21 10:19:24 [info] 7672#0: *1 client 127.0.0.1 closed keepalive connection
-
-==> /tmp/nginx-test-error-g.log <==
-2020/10/21 10:19:39 [info] 7672#0: Hello, world!
+2020/10/21 12:33:28 [info] 20676#0: *1 Request finished while logging request, client: 127.0.0.1, server: main, request: "GET /?a=hello&b=world HTTP/1.1", host: "localhost:8010"
+2020/10/21 12:33:28 [info] 20676#0: *1 client 127.0.0.1 closed keepalive connection
+2020/10/21 12:33:30 [info] 20676#0: *2 Hello, world!, client: 127.0.0.1, server: main, request: "GET /tee HTTP/1.1", host: "localhost:8010"
 
 ==> /tmp/nginx-test-access.log <==
-127.0.0.1 - - [21/Oct/2020:10:19:39 +0300] "GET /tee HTTP/1.1" 200 14 "-" "curl/7.69.1"
+127.0.0.1 - - [21/Oct/2020:12:33:30 +0300] "GET /tee HTTP/1.1" 200 14 "-" "curl/7.69.1"
 
 ==> /tmp/nginx-test-error-g.log <==
-2020/10/21 10:19:39 [info] 7672#0: Write in global log!
+2020/10/21 12:33:30 [info] 20676#0: Write in global log!
 
 ==> /tmp/nginx-test-error.log <==
-2020/10/21 10:19:39 [info] 7672#0: *2 client 127.0.0.1 closed keepalive connection
+2020/10/21 12:33:30 [info] 20676#0: *2 client 127.0.0.1 closed keepalive connection
 ```
 
 Building and installation
@@ -208,14 +208,14 @@ and install *ngx_log_plugin.so* being a superuser.
 # cp objs/ngx_log_plugin.so /var/lib/nginx/hslibs/libngx_log_plugin.so
 ```
 
-When building a custom library, import the Haskell module.
+When building a custom library (such as *ngx_log.hs* from the example above),
+import the Haskell module.
 
 ```haskell
 import NgxExport.Log ()
 ```
 
-The custom library (such as *ngx_log.hs* from the example above) must be linked
-against the C code.
+The custom library must be linked against the C code.
 
 ```ShellSession
 $ export NGX_MODULE_PATH=/var/lib/nginx/hslibs
