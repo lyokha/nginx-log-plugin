@@ -6,7 +6,6 @@ import           NgxExport
 import           NgxExport.Tools
 
 import           Data.ByteString (ByteString)
-import qualified Data.ByteString as B
 import qualified Data.ByteString.Lazy as L
 import qualified Data.ByteString.Char8 as C8
 import qualified Data.ByteString.Unsafe as B
@@ -14,7 +13,6 @@ import           Control.Arrow
 import           Foreign.C.Types
 import           Foreign.C.String
 import           Foreign.Ptr
-import           Foreign.Storable
 import           Data.Char
 
 -- BEWARE: the values must correspond to the macro definitions from ngx_log.h!
@@ -45,7 +43,6 @@ logR l msg = do
     let (r, v) = ngxRequestPtr &&& skipRPtr $ msg
     B.unsafeUseAsCStringLen (C8.dropWhile isSpace v) $
         \(x , i) -> c_log_r r (fromIntegral $ fromEnum l) x $ fromIntegral i
-    where skipRPtr = B.drop $ sizeOf (undefined :: Word)
 
 logStderr :: ByteString -> IO L.ByteString
 logStderr msg = logG LogStderr msg >> return ""

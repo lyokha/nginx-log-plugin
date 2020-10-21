@@ -26,8 +26,7 @@ configuration level (i.e. the level outside of the *http* clause), while their
 *R*-counterparts `logStderrR`, `logEmergR`, `logAlertR`, `logCritR`, `logErrR`,
 `logWarnR`, `logNoticeR`, `logInfoR`, and `logDebugR` write to the specific for
 the current location error log. The *R* directives require the request context,
-and therefore they are heavier in use and speed than the *simple* directives and
-should be avoided when Nginx logs all messages into a single destination.
+and therefore they are heavier in use and speed than the *simple* directives.
 
 Haskell functions of the same names as the logging directives can be used in
 custom Haskell handlers.
@@ -43,14 +42,17 @@ An example
 module NgxLog where
 
 import           NgxExport
+import           NgxExport.Tools (skipRPtr)
 
-import           NgxExport.Log (logInfo)
+import           NgxExport.Log (logInfoR)
 
 import           Data.ByteString (ByteString)
+import qualified Data.ByteString.Char8 as C8
 import qualified Data.ByteString.Lazy as L
 import qualified Data.ByteString.Lazy.Char8 as C8L
 import           Data.ByteString.Unsafe (unsafePackAddressLen)
 import           Data.ByteString.Internal (accursedUnutterablePerformIO)
+import           Data.Char
 import           GHC.Prim
 import           Control.Monad
 
@@ -59,14 +61,14 @@ packLiteral l s = accursedUnutterablePerformIO $ unsafePackAddressLen l s
 
 tee :: ByteString -> IO ContentHandlerResult
 tee msg = do
-    void $ logInfo msg
+    void $ logInfoR msg
     return $ (, packLiteral 10 "text/plain"#, 200, []) $
-        flip C8L.snoc '\n' $ L.fromStrict msg
+        flip C8L.snoc '\n' $ L.fromStrict $ C8.dropWhile isSpace $ skipRPtr msg
 
 ngxExportAsyncHandler 'tee
 ```
 
-Here we used function `logInfo` to make asynchronous content handler *tee* that
+Here we used function `logInfoR` to make asynchronous content handler *tee* that
 echoes its argument both in the response body and the global error log. All
 Haskell handlers for using in logging directives are exported automatically.
 
@@ -113,7 +115,8 @@ http {
         }
 
         location /tee {
-            haskell_async_content tee "Hello, world!";
+            haskell_async_content tee "$_r_ptr
+                    Hello, world!";
         }
     }
 }
