@@ -21,14 +21,14 @@ Directives and custom handlers
 
 There are two flavours of logging directives. Directives `logStderr`,
 `logEmerg`, `logAlert`, `logCrit`, `logErr`, `logWarn`, `logNotice`, `logInfo`,
-and `logDebug` write to the global error log associated with the main
+and `logDebug` write to the *global* error log associated with the main
 configuration level (i.e. the level outside of the *http* clause), while their
 *R*-counterparts `logStderrR`, `logEmergR`, `logAlertR`, `logCritR`, `logErrR`,
-`logWarnR`, `logNoticeR`, `logInfoR`, and `logDebugR` write to the specific for
-the current location error log. The *R* directives require the request context,
-and therefore they are heavier in use and speed than the *simple* (or *global*)
-logging directives, however they log the useful request context data which is
-unavailable in the global context.
+`logWarnR`, `logNoticeR`, `logInfoR`, and `logDebugR` write to a specific for
+the current location *http* error log. The *R* directives require the request
+context, and therefore they are heavier in use and speed than the *simple* (or
+*global*) logging directives, however they log the useful request context data
+which is unavailable in the global context.
 
 Haskell functions of the same names as the logging directives can be used in
 custom Haskell handlers.
@@ -72,7 +72,7 @@ ngxExportAsyncHandler 'tee
 
 Here we used function `logInfoR` to make asynchronous content handler *tee* that
 echoes its argument both in the response body and the error log. All Haskell
-handlers for using in logging directives are exported automatically.
+handlers used in logging directives are exported automatically.
 
 ###### File *nginx.conf*
 
@@ -124,11 +124,12 @@ http {
 }
 ```
 
-There is a global error log */tmp/nginx-test-error-g.log* where directive
-`logInfo` will write to, and an error log */tmp/nginx-test-error.log* declared
-inside the *http* clause where directives `logInfoR` will write to. Notice that
-the *R* directives and handlers require variable `$_r_ptr` to properly log
-messages: missing this variable may lead to crashes of Nginx worker processes!
+There is the *global* error log */tmp/nginx-test-error-g.log* where directive
+`logInfo` will write to, and an *http* error log */tmp/nginx-test-error.log*
+declared inside the *http* clause where directives `logInfoR` will write to.
+Notice that the *R* directives and handlers require variable `$_r_ptr` to
+properly log messages: missing this variable may lead to crashes of Nginx worker
+processes!
 
 ###### A simple test
 
@@ -222,8 +223,9 @@ $ export NGX_MODULE_PATH=/var/lib/nginx/hslibs
 $ ghc -Wall -O2 -dynamic -shared -fPIC -lHSrts_thr-ghc$(ghc --numeric-version) -L$NGX_MODULE_PATH -lngx_log_plugin custom.hs -o custom.so -fforce-recomp
 ```
 
-It's time to collect all dependent libraries, patch *custom.so*, and install
-everything. The custom library can be patched by utility
+It's time to collect all dependent libraries, patch *custom.so* by injecting
+correct *rpath* values, and install everything. The custom library can be
+patched by utility
 [*hslibdeps*](https://github.com/lyokha/nginx-haskell-module/blob/master/utils/README.md#utility-hslibdeps).
 
 ```ShellSession
