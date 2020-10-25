@@ -31,8 +31,8 @@ context, and therefore they are heavier in use and speed than the *simple* (or
 which is unavailable in the global context.
 
 Haskell functions of the same names as the logging directives can be used in
-custom Haskell handlers. Besides them, there are two generic functions *logG*
-and *logR* which expect a log level of type `LogLevel` as their first argument
+custom Haskell handlers. Besides them, there are two generic functions `logG`
+and `logR` which expect a log level of type `LogLevel` as their first argument
 (this type includes values `LogStderr`, `LogEmerg`, `LogAlert`, `LogCrit`,
 `LogErr`, `LogWarn`, `LogNotice`, `LogInfo`, and `LogDebug`).
 
