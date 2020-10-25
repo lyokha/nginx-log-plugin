@@ -31,7 +31,10 @@ context, and therefore they are heavier in use and speed than the *simple* (or
 which is unavailable in the global context.
 
 Haskell functions of the same names as the logging directives can be used in
-custom Haskell handlers.
+custom Haskell handlers. Besides them, there are two generic functions *logG*
+and *logR* which expect a log level of type `LogLevel` as their first argument
+(this type includes values `LogStderr`, `LogEmerg`, `LogAlert`, `LogCrit`,
+`LogErr`, `LogWarn`, `LogNotice`, `LogInfo`, and `LogDebug`).
 
 An example
 ----------
@@ -46,7 +49,7 @@ module NgxLog where
 import           NgxExport
 import           NgxExport.Tools (skipRPtr)
 
-import           NgxExport.Log (logInfoR)
+import           NgxExport.Log (logR, LogLevel (..))
 
 import           Data.ByteString (ByteString)
 import qualified Data.ByteString.Char8 as C8
@@ -56,23 +59,23 @@ import           Data.ByteString.Unsafe (unsafePackAddressLen)
 import           Data.ByteString.Internal (accursedUnutterablePerformIO)
 import           Data.Char
 import           GHC.Prim
-import           Control.Monad
 
 packLiteral :: Int -> GHC.Prim.Addr# -> ByteString
 packLiteral l s = accursedUnutterablePerformIO $ unsafePackAddressLen l s
 
 tee :: ByteString -> IO ContentHandlerResult
 tee msg = do
-    void $ logInfoR msg
+    logR LogInfo msg
     return $ (, packLiteral 10 "text/plain"#, 200, []) $
         flip C8L.snoc '\n' $ L.fromStrict $ C8.dropWhile isSpace $ skipRPtr msg
 
 ngxExportAsyncHandler 'tee
 ```
 
-Here we used function `logInfoR` to make asynchronous content handler *tee* that
-echoes its argument both in the response body and the error log. All Haskell
-handlers used in logging directives are exported automatically.
+Here we used function `logR` with argument `LogInfo` to make asynchronous
+content handler *tee* that echoes its argument both in the response body and the
+error log. All Haskell handlers used in logging directives are exported
+automatically.
 
 ###### File *nginx.conf*
 
@@ -128,7 +131,7 @@ There is the *global* error log */tmp/nginx-test-error-g.log* where directive
 `logInfo` will write to, and an *http* error log */tmp/nginx-test-error.log*
 declared inside the *http* clause where directives `logInfoR` will write to.
 Notice that the *R* directives and handlers require variable `$_r_ptr` to
-properly log messages: missing this variable may lead to crashes of Nginx worker
+properly log messages: missing this variable may cause crashes of Nginx worker
 processes!
 
 ###### A simple test
