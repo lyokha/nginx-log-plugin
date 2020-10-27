@@ -116,7 +116,7 @@ http {
                         Got a = "$arg_a"';
             }
 
-            haskell_run logInfoR !$msg2 '$_r_ptr
+            haskell_run logInfoR !$msgR '$_r_ptr
                     Request finished';
 
             echo Ok;
@@ -135,7 +135,9 @@ There is the *global* error log */tmp/nginx-test-error-g.log* where directive
 declared inside the *http* clause where directives `logInfoR` will write to.
 Notice that the *R* directives and handlers require variable `$_r_ptr` to
 properly log messages: missing this variable may cause crashes of Nginx worker
-processes!
+processes! Notice also that we used different variable names `$msg0`, `$msg1`
+and others: reusing the same name in a single request scenario (including
+rewrites between locations) may lead to missing log messages.
 
 ###### A simple test
 
