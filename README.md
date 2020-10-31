@@ -170,7 +170,7 @@ In the first terminal the following lines should appear.
 2020/10/21 12:33:28 [info] 20676#0: Write in global log!
 
 ==> /tmp/nginx-test-error.log <==
-2020/10/21 12:33:28 [info] 20676#0: *1 Request finished while logging request, client: 127.0.0.1, server: main, request: "GET /?a=hello&b=world HTTP/1.1", host: "localhost:8010"
+2020/10/21 12:33:28 [info] 20676#0: *1 Request finished, client: 127.0.0.1, server: main, request: "GET /?a=hello&b=world HTTP/1.1", host: "localhost:8010"
 2020/10/21 12:33:28 [info] 20676#0: *1 client 127.0.0.1 closed keepalive connection
 2020/10/21 12:33:30 [info] 20676#0: *2 Hello, world!, client: 127.0.0.1, server: main, request: "GET /tee HTTP/1.1", host: "localhost:8010"
 

@@ -30,6 +30,7 @@ foreign import ccall unsafe "plugin_ngx_http_haskell_log"
     c_log :: Ptr () -> CUIntPtr -> CString -> CSize -> IO ()
 
 logG :: LogLevel -> ByteString -> IO ()
+logG _ "" = return ()
 logG l msg = do
     c <- ngxCyclePtr
     B.unsafeUseAsCStringLen msg $
@@ -39,6 +40,7 @@ foreign import ccall unsafe "plugin_ngx_http_haskell_log_r"
     c_log_r :: Ptr () -> CUIntPtr -> CString -> CSize -> IO ()
 
 logR :: LogLevel -> ByteString -> IO ()
+logR _ "" = return ()
 logR l msg = do
     let (r, v) = ngxRequestPtr &&& skipRPtr $ msg
     B.unsafeUseAsCStringLen (C8.dropWhile isSpace v) $
