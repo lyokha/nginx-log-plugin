@@ -26,14 +26,21 @@ plugin_ngx_http_haskell_log_r(void *request_data, ngx_uint_t level,
     ngx_http_request_t  *r = request_data;
     ngx_str_t            msg_s = { len, msg };
     char                *action;
+    ngx_uint_t           swap_action;
 
     if (r == NULL) {
         return;
     }
 
     action = r->connection->log->action;
-    r->connection->log->action = NULL;
+    swap_action = action == NULL ? 0 : 1;
+
+    if (swap_action) {
+        r->connection->log->action = NULL;
+    }
     ngx_log_error(level, r->connection->log, 0, "%V", &msg_s);
-    r->connection->log->action = action;
+    if (swap_action) {
+        r->connection->log->action = action;
+    }
 }
 
