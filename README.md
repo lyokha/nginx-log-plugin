@@ -184,8 +184,8 @@ In the first terminal the following lines should appear.
 2020/10/21 12:33:30 [info] 20676#0: *2 client 127.0.0.1 closed keepalive connection
 ```
 
-See more examples of typical use cases and gotchas in [*a test Nginx
-configuration file*](test/nginx.conf).
+See more [*examples of typical use cases and
+gotchas*](https://github.com/lyokha/nginx-log-plugin/blob/8ad89be3c8463a0171949fe78ab7851fb20c4ed5/test/nginx.conf#L63).
 
 Building and installation
 -------------------------
