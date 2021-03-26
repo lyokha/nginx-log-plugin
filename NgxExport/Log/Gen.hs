@@ -13,12 +13,12 @@ do
     TyConI (DataD _ _ _ _ lCs _) <- reify ''LogLevel
     let lCons = map (\(NormalC con []) -> con) lCs
         lCons' = lCons ++ map (mkName . (++ "R") . nameBase) lCons
-        fll = mkName "logFuncs"
+        flf = mkName "logFuncs"
         toFuncName "" = ""
         toFuncName (h : t) = toLower h : t
     sequence $
-        [sigD fll [t|[String]|]
-        ,funD fll [clause []
+        [sigD flf [t|[String]|]
+        ,funD flf [clause []
                         (normalB $ listE $
                             map (litE . stringL . toFuncName . nameBase) lCons'
                         ) []
