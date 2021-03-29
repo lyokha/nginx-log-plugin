@@ -5,33 +5,31 @@ module NgxExport.Log.Gen where
 import           NgxExport.Log.Base
 
 import           Language.Haskell.TH
+import           Control.Arrow
 import           Data.ByteString (ByteString)
 import qualified Data.ByteString.Lazy as L
-import           Control.Arrow
 import           Data.Char
 
 do
     TyConI (DataD _ _ _ _ lCs _) <- reify ''LogLevel
     let lCons = map (\(NormalC con []) -> con) lCs
-        lCons' = map ((, 'logG) . (id &&& id)) lCons ++
-            map ((, 'logR) . (id &&& mkName . (++ "R") . nameBase)) lCons
-        flf = mkName "logFuncs"
+        lCons' = map ((, 'logG) . (id &&& toFuncName . nameBase)) lCons ++
+            map ((, 'logR) . (id &&& toFuncName . (++ "R") . nameBase)) lCons
         toFuncName "" = ""
         toFuncName (h : t) = toLower h : t
+        flf = mkName "logFuncs"
     sequence $
         [sigD flf [t|[String]|]
         ,funD flf [clause []
                         (normalB $ listE $
-                            map (litE . stringL . toFuncName . nameBase .
-                                    snd . fst
-                                ) lCons'
+                            map (litE . stringL . snd . fst) lCons'
                         ) []
                     ]
         ]
         ++
         concatMap
-        (\((con, con'), f) ->
-             let fl = mkName $ toFuncName $ nameBase con'
+        (\((con, fn), f) ->
+             let fl = mkName fn
              in [sigD fl [t|ByteString -> IO L.ByteString|]
                 ,funD fl [clause [varP $ mkName "msg"]
                              (normalB
