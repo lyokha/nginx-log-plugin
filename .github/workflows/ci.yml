@@ -61,7 +61,8 @@ jobs:
                   nginx-haskell-module-head
           else
               wget "https://github.com/lyokha/nginx-haskell-module/"`
-                  `"archive/refs/tags/${NGXHMVER}.tar.gz" &&
+                  `"archive/refs/tags/${NGXHMVER}.tar.gz" \
+                      -O nginx-haskell-module-${NGXHMVER}.tar.gz &&
                       tar xzvf nginx-haskell-module-${NGXHMVER}.tar.gz
           fi
           git clone https://github.com/openresty/echo-nginx-module.git

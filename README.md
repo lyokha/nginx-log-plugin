@@ -1,6 +1,8 @@
 Native Nginx logging from configuration files
 =============================================
 
+[![Build Status](https://github.com/lyokha/nginx-log-plugin/workflows/CI/badge.svg)](https://github.com/lyokha/nginx-log-plugin/actions?query=workflow%3ACI)
+
 **Disclaimer**: this is not an Nginx module in the traditional sense! It
 compiles to a shared library that gets loaded in Nginx using directive
 `haskell load` from Nginx module
