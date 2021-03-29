@@ -78,6 +78,7 @@ jobs:
                          --add-module=../echo-nginx-module \
                          --add-dynamic-module=..
           make -j2
+          cp objs/ngx_plugin.so objs/libngx_plugin.so
           cd -
 
           cabal v1-configure
