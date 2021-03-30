@@ -21,10 +21,10 @@ do
     sequence $
         [sigD flf [t|[String]|]
         ,funD flf [clause []
-                        (normalB $ listE $
-                            map (litE . stringL . snd . fst) lCons'
-                        ) []
-                    ]
+                      (normalB $
+                          listE $ map (litE . stringL . snd . fst) lCons'
+                      ) []
+                  ]
         ]
         ++
         concatMap
