@@ -103,6 +103,8 @@ http {
 
     haskell load /var/lib/nginx/ngx_log.so;
 
+    haskell_var_nohash $msg*;
+
     server {
         listen          8010;
         server_name     main;
