@@ -189,7 +189,7 @@ In the first terminal the following lines should appear.
 ```
 
 See more [*examples of typical use cases and
-gotchas*](https://github.com/lyokha/nginx-log-plugin/blob/8ad89be3c8463a0171949fe78ab7851fb20c4ed5/test/nginx.conf#L63).
+gotchas*](https://github.com/lyokha/nginx-log-plugin/blob/72b682dd1b4c7d88d03cee03fa48f1f43f80c238/test/nginx.conf#L65).
 
 Building and installation
 -------------------------
