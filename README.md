@@ -139,8 +139,8 @@ Notice that the *R* directives and handlers require variable `$_r_ptr` to
 properly log messages: missing this variable may cause crashes of Nginx worker
 processes! Notice also that we used a *strict volatile* variable `<~$msg` for
 logging *early* messages inside locations: using a single regular strict early
-variable (say `<!$msg`) in a single request which would trigger *if* blocks and
-rewrites between locations could lead to missing log messages.
+variable (say `<!$msg`) in a single request which would have triggered *if*
+blocks and rewrites between locations could lead to missing log messages.
 
 ###### A simple test
 
