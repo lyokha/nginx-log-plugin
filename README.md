@@ -103,8 +103,6 @@ http {
 
     haskell load /var/lib/nginx/ngx_log.so;
 
-    haskell_var_nohash $msg*;
-
     server {
         listen          8010;
         server_name     main;
@@ -112,11 +110,11 @@ http {
         haskell_run logInfo !$msgG "Write in global log!";
 
         location / {
-            haskell_run logInfoR <!$msg0 '$_r_ptr
+            haskell_run logInfoR <~$msg '$_r_ptr
                     Got query "$args"';
 
             if ($arg_a) {
-                haskell_run logInfoR <!$msg1 '$_r_ptr
+                haskell_run logInfoR <~$msg '$_r_ptr
                         Got a = "$arg_a"';
             }
 
@@ -139,9 +137,10 @@ There is the *global* error log */tmp/nginx-test-error-g.log* where directive
 declared inside the *http* clause where directives `logInfoR` will write to.
 Notice that the *R* directives and handlers require variable `$_r_ptr` to
 properly log messages: missing this variable may cause crashes of Nginx worker
-processes! Notice also that we used different variable names `$msg0`, `$msg1`
-and others: reusing the same name in a single request scenario (including
-rewrites between locations) may lead to missing log messages.
+processes! Notice also that we used a *strict volatile* variable `<~$msg` for
+logging *early* messages inside locations: using a single regular strict early
+variable (say `<!$msg`) in a single request which would trigger *if* blocks and
+rewrites between locations could lead to missing log messages.
 
 ###### A simple test
 
