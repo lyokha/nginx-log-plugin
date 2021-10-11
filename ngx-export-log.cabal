@@ -1,5 +1,5 @@
 name:                  ngx-export-log
-version:               0.4.0.0
+version:               1.0
 synopsis:              Logging with native Nginx logging mechanism
 description:           Logging with native Nginx logging mechanism
 author:                Alexey Radkov <alexey.radkov@gmail.com>

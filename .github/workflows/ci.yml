@@ -77,6 +77,7 @@ jobs:
           $NGX_CONFIGURE --add-module=../nginx-haskell-module-${NGXHMVER} \
                          --add-module=../echo-nginx-module \
                          --add-dynamic-module=..
+                         --add-dynamic-module=../module
           make -j2
           cp objs/ngx_log_plugin.so objs/libngx_log_plugin.so
           cd -

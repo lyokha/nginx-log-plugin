@@ -16,6 +16,7 @@ Table of contents
 
 - [Directives and custom handlers](#directives-and-custom-handlers)
 - [An example](#an-example)
+- [High-level directives log and log ultimate](#high-level-directives-log-and-log-ultimate)
 - [Building and installation](#building-and-installation)
 
 Directives and custom handlers
@@ -101,7 +102,7 @@ http {
     error_log           /tmp/nginx-test-error.log info;
     access_log          /tmp/nginx-test-access.log;
 
-    haskell load /var/lib/nginx/ngx_log.so;
+    haskell load        /var/lib/nginx/ngx_log.so;
 
     server {
         listen          8010;
@@ -190,6 +191,51 @@ In the first terminal the following lines should appear.
 See more [*examples of typical use cases and
 gotchas*](https://github.com/lyokha/nginx-log-plugin/blob/a43fc1781815a03d0dc0de78b0f79a397f4c4d56/test/nginx.conf#L63).
 
+High-level directives log and log ultimate
+------------------------------------------
+
+Directives `haskell_run log...` are overflowed with gory details including
+embarrassing handler variables and variable `$_r_ptr`. Directives `log` and
+`log ultimate` were introduced to hide these details by setting reasonable
+defaults. For using them, an additional Nginx *dynamic module* must be built and
+loaded.
+
+```nginx
+load_module             /var/lib/nginx/modules/ngx_log_plugin_module.so;
+```
+
+Location */* from the example shown in the previous section could be rewritten
+as
+
+```nginx
+        location / {
+            log info 'Got query "$args"';
+
+            if ($arg_a) {
+                log info 'Got a = "$arg_a"';
+            }
+
+            log ultimate info 'Request finished';
+
+            if ($arg_c) {
+                rewrite ^ /rewr last;
+            }
+
+            echo Ok;
+        }
+```
+
+Directive `log` introduces handler variables `<!$msgRsrv0` through `<!$msgRsrv3`
+in *server* clauses and `<~$msgV0` through `<~$msgV3` in *location* and
+*location-if* clauses. Directive `log ultimate` introduces handler variables
+`!$msgUsrv0` through `!$msgUsrv3` in *server* clauses and `!$msgU0` through
+`!$msgU3` in *location* and *location-if* clauses. The extra variables with
+suffixes *1* through *3* are used when the directives get declared multiple
+times at a single configuration level.
+
+Both directives `log` and `log ultimate` use the *R* log handlers which means
+that there is no high-level log directive for writing into the global log.
+
 Building and installation
 -------------------------
 
@@ -213,7 +259,7 @@ $ cd /path/to/nginx/sources
 compile,
 
 ```ShellSession
-$ ./configure --add-dynamic-module=/path/to/nginx-log-plugin/sources
+$ ./configure --add-dynamic-module=/path/to/nginx-log-plugin/sources --add-dynamic-module=/path/to/nginx-log-plugin/sources/module
 $ make modules
 ```
 
@@ -221,6 +267,13 @@ and install *ngx_log_plugin.so* being a superuser.
 
 ```ShellSession
 # cp objs/ngx_log_plugin.so /var/lib/nginx/hslibs/libngx_log_plugin.so
+```
+
+For using directives `log` and `log ultimate`, the dynamic module
+*ngx_log_plugin_module* must also be installed.
+
+```ShellSession
+# cp objs/ngx_log_plugin_module.so /var/lib/nginx/modules/
 ```
 
 When building a custom library (such as *ngx_log.hs* from the example above),

@@ -1,0 +1,24 @@
+ngx_addon_name=ngx_log_plugin_module
+
+if [ "$ngx_module_link" = DYNAMIC ]; then
+    ngx_module_type=HTTP
+    ngx_module_name=$ngx_addon_name
+
+    NGX_HTTP_HASKELL_MODULE_DEPS="                                          \
+            $ngx_http_haskell_module_dir/src/ngx_haskell_module.h           \
+            "
+
+    NGX_HTTP_LOG_PLUGIN_SRCS="                                              \
+            $ngx_addon_dir/ngx_log_plugin_module.c                          \
+            "
+
+    ngx_module_srcs="$NGX_HTTP_LOG_PLUGIN_SRCS"
+    ngx_module_incs="$ngx_http_haskell_module_dir/src"
+
+    . auto/module
+else
+    echo -n "$0: error: $ngx_addon_name must be compiled as a dynamic module, "
+    echo    "use option --add-dynamic-module for that!"
+    exit 1
+fi
+
