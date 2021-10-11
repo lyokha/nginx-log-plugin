@@ -229,6 +229,6 @@ ngx_http_log_plugin_log(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
     hlcf = ngx_http_conf_get_module_loc_conf(cf, ngx_http_haskell_module);
 
-    return (ngx_http_haskell_run(&cf_haskell_run, NULL, hlcf));
+    return ngx_http_haskell_run(&cf_haskell_run, NULL, hlcf);
 }
 
