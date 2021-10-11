@@ -8,8 +8,6 @@ typedef struct {
 
 
 static void *ngx_http_log_plugin_create_loc_conf(ngx_conf_t *cf);
-static char *ngx_http_log_plugin_merge_loc_conf(ngx_conf_t *cf, void *parent,
-    void *child);
 static char *ngx_http_log_plugin_log(ngx_conf_t *cf, ngx_command_t *cmd,
     void *conf);
 
@@ -38,7 +36,7 @@ static ngx_http_module_t  ngx_http_log_plugin_ctx = {
     NULL,                                  /* merge server configuration */
 
     ngx_http_log_plugin_create_loc_conf,   /* create location configuration */
-    ngx_http_log_plugin_merge_loc_conf     /* merge location configuration */
+    NULL                                   /* merge location configuration */
 };
 
 
@@ -66,13 +64,6 @@ ngx_http_log_plugin_create_loc_conf(ngx_conf_t *cf)
     lcf = ngx_pcalloc(cf->pool, sizeof(ngx_http_log_plugin_loc_conf_t));
 
     return lcf;
-}
-
-
-static char *
-ngx_http_log_plugin_merge_loc_conf(ngx_conf_t *cf, void *parent, void *child)
-{
-    return NGX_CONF_OK;
 }
 
 
