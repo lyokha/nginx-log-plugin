@@ -88,7 +88,7 @@ ngx_http_log_plugin_log(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
         if (value[1].len != 8 || ngx_strncmp(value[1].data, "ultimate", 8) != 0)
         {
             ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
-                               "wrong declaration of directive log");
+                               "wrong declaration of directive \"log\"");
             return NGX_CONF_ERROR;
         }
         ultimate = 1;
@@ -98,14 +98,15 @@ ngx_http_log_plugin_log(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
         if (lcf->count_ultimate == 4) {
             ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
                                "too many declarations of directive "
-                               "log ultimate at a single configuration level");
+                               "\"log ultimate\" at a single configuration "
+                               "level");
             return NGX_CONF_ERROR;
         }
     } else {
         if (lcf->count == 4) {
             ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
                                "too many declarations of directive "
-                               "log at a single configuration level");
+                               "\"log\" at a single configuration level");
             return NGX_CONF_ERROR;
         }
     }
@@ -114,7 +115,8 @@ ngx_http_log_plugin_log(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
         != NGX_OK)
     {
         ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
-                           "failed to allocate memory for directive log data");
+                           "failed to allocate memory for directive \"log\" "
+                           "data");
         return NGX_CONF_ERROR;
     }
 

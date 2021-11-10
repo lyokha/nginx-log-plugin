@@ -4,14 +4,15 @@ if [ "$ngx_module_link" = DYNAMIC ]; then
     ngx_module_type=HTTP
     ngx_module_name=$ngx_addon_name
 
-    NGX_HTTP_HASKELL_MODULE_DEPS="                                          \
-            $ngx_http_haskell_module_dir/src/ngx_haskell_module.h           \
+    NGX_HTTP_LOG_PLUGIN_DEPS="                                              \
+            $ngx_http_haskell_module_dir/src/ngx_http_haskell_module.h      \
             "
 
     NGX_HTTP_LOG_PLUGIN_SRCS="                                              \
             $ngx_addon_dir/ngx_log_plugin_module.c                          \
             "
 
+    ngx_module_deps="$NGX_HTTP_LOG_PLUGIN_DEPS"
     ngx_module_srcs="$NGX_HTTP_LOG_PLUGIN_SRCS"
     ngx_module_incs="$ngx_http_haskell_module_dir/src"
 
