@@ -14,7 +14,7 @@ do
     TyConI (DataD _ _ _ _ lCs _) <- reify ''LogLevel
     let lCons = map (\case
                          NormalC con [] -> con
-                         - -> undefined
+                         _ -> undefined
                     ) lCs
         lCons' = map ((, 'logG) . (id &&& toFuncName . nameBase)) lCons ++
             map ((, 'logR) . (id &&& toFuncName . (++ "R") . nameBase)) lCons
