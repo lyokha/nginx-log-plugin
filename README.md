@@ -225,12 +225,12 @@ as
         }
 ```
 
-Directive `log` introduces handler variables `<!$log_Rsrv0` through
-`<!$log_Rsrv3` in *server* clauses and `<~$log_V0` through `<~$log_V3` in
+Directive `log` introduces handler variables `<!$_log_Rsrv0` through
+`<!$_log_Rsrv3` in *server* clauses and `<~$_log_V0` through `<~$_log_V3` in
 *location* and *location-if* clauses. Directive `log ultimate` introduces
-handler variables `!$log_Usrv0` through `!$log_Usrv3` in *server* clauses and
-`!$log_U0` through `!$log_U3` in *location* and *location-if* clauses. The extra
-variables with suffixes *1* through *3* are used when the directives get
+handler variables `!$_log_Usrv0` through `!$_log_Usrv3` in *server* clauses and
+`!$_log_U0` through `!$_log_U3` in *location* and *location-if* clauses. The
+extra variables with suffixes *1* through *3* are used when the directives get
 declared multiple times at a single configuration level.
 
 Both directives `log` and `log ultimate` use the *R* log handlers which means

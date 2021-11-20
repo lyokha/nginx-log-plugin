@@ -183,19 +183,19 @@ ngx_http_log_plugin_log(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
     if (ultimate) {
         if (cf->cmd_type & NGX_HTTP_SRV_CONF) {
-            var_name = "!$log_Usrv";
-            var->len = 11;
+            var_name = "!$_log_Usrv";
+            var->len = 12;
         } else {
-            var_name = "!$log_U";
-            var->len = 8;
+            var_name = "!$_log_U";
+            var->len = 9;
         }
     } else {
         if (cf->cmd_type & NGX_HTTP_SRV_CONF) {
-            var_name = "<!$log_Rsrv";
-            var->len = 12;
+            var_name = "<!$_log_Rsrv";
+            var->len = 13;
         } else {
-            var_name = "<~$log_V";
-            var->len = 9;
+            var_name = "<~$_log_V";
+            var->len = 10;
         }
     }
 
