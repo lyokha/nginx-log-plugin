@@ -34,13 +34,13 @@ context, and therefore they are heavier in use and speed than the *simple* (or
 which is unavailable in the global context.
 
 Haskell functions of the same names as the logging directives can be used in
-custom Haskell handlers. Besides them, there are two generic functions `logG`
-and `logR` which expect a log level of type `LogLevel` as their first argument
-(this type contains values `LogStderr`, `LogEmerg`, `LogAlert`, `LogCrit`,
-`LogErr`, `LogWarn`, `LogNotice`, `LogInfo`, and `LogDebug`). The *global*
-logging functions can be used in custom *services* and *service hooks* (in terms
-of *nginx-haskell-module*), while the *R* functions are useful in other
-synchronous and asynchronous handlers.
+custom Haskell handlers. Besides them, there are three generic functions `logG`,
+`logR`, and `logR'` which expect a log level of type `LogLevel` as their first
+argument (this type contains values `LogStderr`, `LogEmerg`, `LogAlert`,
+`LogCrit`, `LogErr`, `LogWarn`, `LogNotice`, `LogInfo`, and `LogDebug`). The
+*global* logging functions can be used in custom *services* and *service hooks*
+(in terms of *nginx-haskell-module*), while the *R* functions are useful in
+other synchronous and asynchronous handlers.
 
 An example
 ----------

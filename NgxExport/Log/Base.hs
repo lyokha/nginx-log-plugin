@@ -33,15 +33,18 @@ logG _ "" = return ()
 logG l msg = do
     c <- ngxCyclePtr
     B.unsafeUseAsCStringLen msg $
-        \(x , i) -> c_log c (fromIntegral $ fromEnum l) x $ fromIntegral i
+        \(x, i) -> c_log c (fromIntegral $ fromEnum l) x $ fromIntegral i
 
 foreign import ccall unsafe "plugin_ngx_http_haskell_log_r"
     c_log_r :: Ptr () -> CUIntPtr -> CString -> CSize -> IO ()
+
+logR' :: LogLevel -> Ptr () -> ByteString -> IO ()
+logR' l r msg = B.unsafeUseAsCStringLen msg $
+    \(x, i) -> c_log_r r (fromIntegral $ fromEnum l) x $ fromIntegral i
 
 logR :: LogLevel -> ByteString -> IO ()
 logR _ "" = return ()
 logR l msg = do
     let (r, v) = ngxRequestPtr &&& skipRPtr $ msg
-    B.unsafeUseAsCStringLen (C8.dropWhile isSpace v) $
-        \(x , i) -> c_log_r r (fromIntegral $ fromEnum l) x $ fromIntegral i
+    logR' l r $ C8.dropWhile isSpace v
 
