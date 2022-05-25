@@ -143,6 +143,21 @@ logging *early* messages inside locations: using a single regular strict early
 variable (say `<!$msg`) in a single request which would have triggered *if*
 blocks and rewrites between locations could lead to missing log messages.
 
+Note that in *nginx-haskell-module* version *3.0* and higher, the *handler(r)*
+syntax is available which means that directives using handler's arguments
+with `$_r_ptr` in the beginning, for example
+
+```nginx
+            haskell_async_content tee "$_r_ptr
+                    Hello, world!";
+```
+
+can be rewritten in a more nice-looking style like
+
+```nginx
+            haskell_async_content tee(r) "Hello, world!";
+```
+
 ###### A simple test
 
 Let's watch the log files,
