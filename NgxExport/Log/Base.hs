@@ -38,13 +38,13 @@ logG l msg = do
 foreign import ccall unsafe "plugin_ngx_http_haskell_log_r"
     c_log_r :: Ptr () -> CUIntPtr -> CString -> CSize -> IO ()
 
-logR' :: LogLevel -> Ptr () -> ByteString -> IO ()
-logR' l r msg = B.unsafeUseAsCStringLen msg $
+logM :: LogLevel -> Ptr () -> ByteString -> IO ()
+logM l r msg = B.unsafeUseAsCStringLen msg $
     \(x, i) -> c_log_r r (fromIntegral $ fromEnum l) x $ fromIntegral i
 
 logR :: LogLevel -> ByteString -> IO ()
 logR _ "" = return ()
 logR l msg = do
     let (r, v) = ngxRequestPtr &&& skipRPtr $ msg
-    logR' l r $ C8.dropWhile isSpace v
+    logM l r $ C8.dropWhile isSpace v
 

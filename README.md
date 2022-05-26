@@ -35,12 +35,14 @@ which is unavailable in the global context.
 
 Haskell functions of the same names as the logging directives can be used in
 custom Haskell handlers. Besides them, there are three generic functions `logG`,
-`logR`, and `logR'` which expect a log level of type `LogLevel` as their first
+`logR`, and `logM` which expect a log level of type `LogLevel` as their first
 argument (this type contains values `LogStderr`, `LogEmerg`, `LogAlert`,
-`LogCrit`, `LogErr`, `LogWarn`, `LogNotice`, `LogInfo`, and `LogDebug`). The
-*global* logging functions can be used in custom *services* and *service hooks*
-(in terms of *nginx-haskell-module*), while the *R* functions are useful in
-other synchronous and asynchronous handlers.
+`LogCrit`, `LogErr`, `LogWarn`, `LogNotice`, `LogInfo`, and `LogDebug`).
+Function `logM` is essentially `logR` with the request context explicitly
+separated from the log message in the parameters. The *global* logging functions
+can be used in custom *services* and *service hooks* (in terms of
+*nginx-haskell-module*), while the *R* functions (including `logM`) are useful
+in other synchronous and asynchronous handlers.
 
 An example
 ----------
