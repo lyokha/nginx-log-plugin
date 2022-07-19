@@ -286,6 +286,8 @@ and install *ngx_log_plugin.so* being a superuser.
 # cp objs/ngx_log_plugin.so /var/lib/nginx/hslibs/libngx_log_plugin.so
 ```
 
+Notice that we added prefix *lib* to the module's name!
+
 For using directives `log` and `log ultimate`, the dynamic module
 *ngx_log_plugin_module* must also be installed.
 
