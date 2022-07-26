@@ -2,8 +2,8 @@
 
 
 typedef struct {
-    ngx_uint_t  count:2;
-    ngx_uint_t  count_ultimate:2;
+    ngx_uint_t  count:3;
+    ngx_uint_t  count_ultimate:3;
 } ngx_http_log_plugin_loc_conf_t;
 
 
