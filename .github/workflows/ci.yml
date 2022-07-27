@@ -43,6 +43,11 @@ jobs:
         with:
           ghc-version: ${{ matrix.ghc }}
           cabal-version: ${{ matrix.cabal }}
+      - name: Install prove
+        uses: perl-actions/install-with-cpanm@v1
+        with:
+          install: "Test::Nginx"
+          tests: false
       - name: Install and test
         env:
           GHCVER: ${{ matrix.ghc }}
@@ -96,6 +101,9 @@ jobs:
                          --add-dynamic-module=../module
           make -j2
           cp objs/ngx_log_plugin.so objs/libngx_log_plugin.so
+          export NGX_MODULE_PATH="$(pwd)/objs"
+          export PATH="$NGX_MODULE_PATH:$PATH"
+          export TEST_NGINX_LOAD_MODULES="$NGX_MODULE_PATH/ngx_log_plugin_module.so"
           cd -
 
           cabal v1-configure
@@ -105,11 +113,12 @@ jobs:
               (cd dist/sdist && cabal v1-install --force-reinstalls "$SRC_TGZ")
 
           cd test
-          export NGX_MODULE_PATH=../nginx-${NGXVER}/objs
           ghc -Wall -O2 -dynamic -shared -fPIC \
               -lHSrts_thr-ghc$(ghc --numeric-version) \
-              -L$NGX_MODULE_PATH -lngx_log_plugin -ddump-splices \
+              -L"$NGX_MODULE_PATH" -lngx_log_plugin -ddump-splices \
               ngx_log.hs -o ngx_log.so -fforce-recomp
+          export TEST_NGINX_LLIB_DIR="$(pwd)"
+          LD_LIBRARY_PATH="$NGX_MODULE_PATH" prove -r t
           cd -
 
           set +e
