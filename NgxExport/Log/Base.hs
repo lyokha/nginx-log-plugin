@@ -1,6 +1,10 @@
 {-# LANGUAGE ForeignFunctionInterface, OverloadedStrings #-}
 
-module NgxExport.Log.Base where
+module NgxExport.Log.Base (LogLevel (..)
+                          ,logG
+                          ,logM
+                          ,logR
+                          ) where
 
 import           NgxExport
 import           NgxExport.Tools
