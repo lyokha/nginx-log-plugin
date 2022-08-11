@@ -22,10 +22,11 @@ do
                          NormalC con [] -> con
                          _ -> undefined
                     ) lCs
+        flr = mkName "logR"
         lCons' = map ((, 'logG) . (id &&& toFuncName . nameBase)) lCons ++
-            map ((, 'logR) . (id &&& toFuncName . (++ "R") . nameBase)) lCons
-        toFuncName "" = ""
+            map ((, flr) . (id &&& toFuncName . (++ "R") . nameBase)) lCons
         toFuncName (h : t) = toLower h : t
+        toFuncName _ = undefined
         flf = mkName "logFuncs"
     sequence $
         [sigD flf [t|[String]|]
@@ -48,7 +49,7 @@ do
 #if MIN_VERSION_template_haskell(2,18,0)
                          (Just $ "Logs a message with severity '" ++
                              nameBase con ++ "' to the " ++
-                                 (if f == 'logR
+                                 (if f == flr
                                       then "request's "
                                       else "global "
                                  ) ++ "Nginx log.\n\n" ++
