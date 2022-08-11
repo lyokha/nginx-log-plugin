@@ -1,5 +1,5 @@
-Native Nginx logging from configuration files
-=============================================
+Native Nginx logging from configuration files and Haskell handlers
+==================================================================
 
 [![Build Status](https://github.com/lyokha/nginx-log-plugin/workflows/CI/badge.svg)](https://github.com/lyokha/nginx-log-plugin/actions?query=workflow%3ACI)
 

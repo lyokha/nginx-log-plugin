@@ -1,7 +1,7 @@
 name:                  ngx-export-log
 version:               1.4
-synopsis:              Logging with native Nginx logging mechanism
-description:           Logging with native Nginx logging mechanism
+synopsis:    Native Nginx logging from configuration files and Haskell handlers
+description: Native Nginx logging from configuration files and Haskell handlers.
 author:                Alexey Radkov <alexey.radkov@gmail.com>
 maintainer:            Alexey Radkov <alexey.radkov@gmail.com>
 category:              Network
