@@ -2,6 +2,7 @@ Native Nginx logging from configuration files and Haskell handlers
 ==================================================================
 
 [![Build Status](https://github.com/lyokha/nginx-log-plugin/workflows/CI/badge.svg)](https://github.com/lyokha/nginx-log-plugin/actions?query=workflow%3ACI)
+[![Hackage](https://img.shields.io/hackage/v/ngx-export-log.svg?label=hackage%20%7C%20ngx-export-log&logo=haskell&logoColor=%239580D1)](https://hackage.haskell.org/package/ngx-export-log)
 
 **Disclaimer**: this is not an Nginx module in the traditional sense! It
 compiles to a shared library that gets loaded in Nginx using directive

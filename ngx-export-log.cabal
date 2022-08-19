@@ -2,6 +2,9 @@ name:                  ngx-export-log
 version:               1.5
 synopsis:    Native Nginx logging from configuration files and Haskell handlers
 description: Native Nginx logging from configuration files and Haskell handlers.
+        .
+        This is a part of <https://github.com/lyokha/nginx-log-plugin>. Custom
+        libraries are required to be linked against C module /ngx_log_plugin/.
 homepage:              http://github.com/lyokha/nginx-log-plugin
 license:               BSD3
 license-file:          LICENSE
