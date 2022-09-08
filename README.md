@@ -56,7 +56,7 @@ An example
 module NgxLog where
 
 import           NgxExport
-import           NgxExport.Tools (skipRPtr)
+import           NgxExport.Tools.Read (skipRPtr)
 
 import           NgxExport.Log (logR, LogLevel (..))
 
