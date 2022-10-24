@@ -20,8 +20,25 @@ import           Data.Char
 
 -- an ugly workaround of haskell-language-server's
 -- [bug](https://github.com/haskell/haskell-language-server/issues/365),
--- this lets hls work with Log.hs without errors
-#ifdef __GHCIDE__
+-- this lets hls work with Log.hs without errors;
+--
+-- after more investigations:
+--
+-- this seems to be more generic buggy(?) behavior or realistic limitation
+-- related to GHC, see [bug](https://github.com/haskell/cabal/issues/8466) and
+-- [bug](https://gitlab.haskell.org/ghc/ghc/-/issues/20674): GHC tries to
+-- dynamically resolve unknown symbol when running GHCI, haddock, hls, etc.;
+--
+-- but we do not have such an in-place library to link against as it's built by
+-- Nginx as a dynamic module that gets loaded by dlopen(), even worse is that
+-- the library will still have unresolved links which means that GHC won't
+-- succeed at linking them;
+--
+-- this workaround provides stubs for c_log and c_log_r when building for hls
+-- and haddock, GHCI can also run with the stubs when adding an extra option:
+-- cabal repl --ghc-options=-D__GHCIDE__ --repl-options=-fobject-code
+
+#if defined(__GHCIDE__) || defined(__HADDOCK_VERSION__)
 #define C_LOG_STUB(f) \
 f :: Ptr () -> CUIntPtr -> CString -> CSize -> IO (); \
 f _ _ _ _ = return ()
@@ -41,7 +58,7 @@ data LogLevel = LogStderr
               | LogInfo
               | LogDebug deriving Enum
 
-#ifdef __GHCIDE__
+#if defined(__GHCIDE__) || defined(__HADDOCK_VERSION__)
 C_LOG_STUB(c_log)
 #else
 foreign import ccall unsafe "plugin_ngx_http_haskell_log"
@@ -58,7 +75,7 @@ logG l msg = do
     B.unsafeUseAsCStringLen msg $
         \(x, i) -> c_log c (fromIntegral $ fromEnum l) x $ fromIntegral i
 
-#ifdef __GHCIDE__
+#if defined(__GHCIDE__) || defined(__HADDOCK_VERSION__)
 C_LOG_STUB(c_log_r)
 #else
 foreign import ccall unsafe "plugin_ngx_http_haskell_log_r"
