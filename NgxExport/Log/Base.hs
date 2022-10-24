@@ -1,4 +1,4 @@
-{-# LANGUAGE ForeignFunctionInterface, OverloadedStrings #-}
+{-# LANGUAGE CPP, ForeignFunctionInterface, OverloadedStrings #-}
 
 module NgxExport.Log.Base (LogLevel (..)
                           ,logG
@@ -18,6 +18,15 @@ import           Foreign.Ptr
 import           Control.Arrow
 import           Data.Char
 
+-- an ugly workaround of haskell-language-server's
+-- [bug](https://github.com/haskell/haskell-language-server/issues/365),
+-- this lets hls work with Log.hs without errors
+#ifdef __GHCIDE__
+#define C_LOG_STUB(f) \
+f :: Ptr () -> CUIntPtr -> CString -> CSize -> IO (); \
+f _ _ _ _ = return ()
+#endif
+
 -- | Log severity levels.
 --
 -- Being applied to a certain constructor, function 'fromEnum' returns the value
@@ -32,8 +41,12 @@ data LogLevel = LogStderr
               | LogInfo
               | LogDebug deriving Enum
 
+#ifdef __GHCIDE__
+C_LOG_STUB(c_log)
+#else
 foreign import ccall unsafe "plugin_ngx_http_haskell_log"
     c_log :: Ptr () -> CUIntPtr -> CString -> CSize -> IO ()
+#endif
 
 -- | Logs a message to the global Nginx log.
 logG :: LogLevel        -- ^ Log severity level
@@ -45,8 +58,12 @@ logG l msg = do
     B.unsafeUseAsCStringLen msg $
         \(x, i) -> c_log c (fromIntegral $ fromEnum l) x $ fromIntegral i
 
+#ifdef __GHCIDE__
+C_LOG_STUB(c_log_r)
+#else
 foreign import ccall unsafe "plugin_ngx_http_haskell_log_r"
     c_log_r :: Ptr () -> CUIntPtr -> CString -> CSize -> IO ()
+#endif
 
 -- | Logs a message to the request's Nginx log.
 --
