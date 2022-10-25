@@ -18,24 +18,20 @@ import           Foreign.Ptr
 import           Control.Arrow
 import           Data.Char
 
--- an ugly workaround of haskell-language-server's
--- [bug](https://github.com/haskell/haskell-language-server/issues/365),
--- this lets hls work with Log.hs without errors;
+-- Some tools such as hls, haddock, and ghci run interactive linking against C
+-- functions plugin_ngx_http_haskell_log() and plugin_ngx_http_haskell_log_r()
+-- when loading Log.hs. In Log.hs, TH declarations from Log/Gen.hs, which make
+-- calls to those C functions, get instantiated. Obviously, linking fails as
+-- soon as we don't have a library to expose the functions because such a
+-- library is built by Nginx and we don't want to use Nginx at this step.
 --
--- after more investigations:
+-- In this workaround, the C functions get replaced by stubs when running by
+-- hls or haddock. This prevents interactive linking in Log.hs. It's easy to
+-- detect that the code is being run by hls or haddock: the tools define their
+-- own C macro declarations __GHCIDE__ and __HADDOCK_VERSION__ respectively. To
+-- prevent interactive linking in ghci, pass one of the two macro declarations
+-- in an appropriate option, e.g.
 --
--- this seems to be more generic buggy(?) behavior or realistic limitation
--- related to GHC, see [bug](https://github.com/haskell/cabal/issues/8466) and
--- [bug](https://gitlab.haskell.org/ghc/ghc/-/issues/20674): GHC tries to
--- dynamically resolve unknown symbol when running GHCI, haddock, hls, etc.;
---
--- but we do not have such an in-place library to link against as it's built by
--- Nginx as a dynamic module that gets loaded by dlopen(), even worse is that
--- the library will still have unresolved links which means that GHC won't
--- succeed at linking them;
---
--- this workaround provides stubs for c_log and c_log_r when building for hls
--- and haddock, GHCI can also run with the stubs when adding an extra option:
 -- cabal repl --ghc-options=-D__GHCIDE__ --repl-options=-fobject-code
 
 #if defined(__GHCIDE__) || defined(__HADDOCK_VERSION__)
