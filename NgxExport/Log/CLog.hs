@@ -6,6 +6,8 @@ import           Foreign.C.Types
 import           Foreign.C.String
 import           Foreign.Ptr
 
+type CLogType = Ptr () -> CUIntPtr -> CString -> CSize -> IO ()
+
 -- Some tools such as hls, haddock, and ghci run interactive linking against C
 -- functions plugin_ngx_http_haskell_log() and plugin_ngx_http_haskell_log_r()
 -- when loading Log.hs. In Log.hs, TH declarations from Log/Gen.hs, which make
@@ -21,8 +23,6 @@ import           Foreign.Ptr
 -- in an appropriate option, e.g.
 --
 -- cabal repl --ghc-options=-D__GHCIDE__ --repl-options=-fobject-code
-
-type CLogType = Ptr () -> CUIntPtr -> CString -> CSize -> IO ()
 
 #if defined(__GHCIDE__) || defined(__HADDOCK_VERSION__)
 #define C_LOG_STUB(f) f :: CLogType; f _ _ _ _ = return ()
