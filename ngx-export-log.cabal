@@ -27,6 +27,7 @@ library
 
   exposed-modules:     NgxExport.Log
   other-modules:       NgxExport.Log.Base
+                     , NgxExport.Log.CLog
                      , NgxExport.Log.Gen
 
   ghc-options:        -Wall

@@ -14,9 +14,7 @@
 --
 -----------------------------------------------------------------------------
 
-module NgxExport.Log (module NgxExport.Log.Base
-                     ,module Gen
-                     ) where
+module NgxExport.Log (module NgxExport.Log.Base, module Gen) where
 
 import           NgxExport
 
