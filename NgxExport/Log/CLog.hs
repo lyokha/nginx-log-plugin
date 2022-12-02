@@ -10,7 +10,7 @@ type CLogType = Ptr () -> CUIntPtr -> CString -> CSize -> IO ()
 
 -- Some tools such as hls, haddock, and ghci run interactive linking against C
 -- functions plugin_ngx_http_haskell_log() and plugin_ngx_http_haskell_log_r()
--- when loading Log.hs. In Log.hs, TH declarations from Log/Gen.hs, which make
+-- when loading Log.hs. In Log.hs, TH declarations from Log/Gen.hs which make
 -- calls to those C functions, get instantiated. Obviously, linking fails as
 -- soon as we don't have a library to expose the functions because such a
 -- library is built by Nginx and we don't want to use Nginx at this step.
