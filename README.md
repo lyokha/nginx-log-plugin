@@ -207,7 +207,7 @@ In the first terminal the following lines should appear.
 ```
 
 See more [*examples of typical use cases and
-gotchas*](https://github.com/lyokha/nginx-log-plugin/blob/d2be7401f0217b718232350b1889b246f208427d/test/nginx.conf#L81).
+gotchas*](https://github.com/lyokha/nginx-log-plugin/blob/8471c4c9f210b95bc10a664db69c5ecc81e73590/test/nginx.conf#L81).
 
 High-level directives log and log ultimate
 ------------------------------------------
