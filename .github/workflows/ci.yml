@@ -12,25 +12,35 @@ jobs:
         ghc: [8.0.2, 8.2.2, 8.4.4, 8.6.5, 8.8.4, 8.10.7, 9.0.2]
         cabal: [3.6.2.0]
         nginx: [1.18.0]
-        nginx-haskell-module: [3.1.2]
+        nginx-haskell-module: [3.1.3]
         experimental: [false]
         include:
-          - ghc: 9.4.2
+          - ghc: 9.6.2
+            cabal: 3.10.1.0
+            nginx: 1.22.1
+            nginx-haskell-module: head
+            experimental: false
+          - ghc: 9.6.2
+            cabal: 3.10.1.0
+            nginx: head
+            nginx-haskell-module: head
+            experimental: true
+          - ghc: 9.4.5
             cabal: 3.8.1.0
             nginx: 1.22.0
             nginx-haskell-module: head
             experimental: false
-          - ghc: 9.4.2
+          - ghc: 9.4.5
             cabal: 3.8.1.0
             nginx: head
             nginx-haskell-module: head
             experimental: true
-          - ghc: 9.2.4
+          - ghc: 9.2.8
             cabal: 3.6.2.0
             nginx: 1.20.2
             nginx-haskell-module: head
             experimental: false
-          - ghc: 9.2.4
+          - ghc: 9.2.8
             cabal: 3.6.2.0
             nginx: head
             nginx-haskell-module: head
@@ -119,11 +129,14 @@ jobs:
               GHC_FLINKRTS="-flink-rts -threaded"
           fi
 
-          cd test
+          cd simple
           ghc -Wall -O2 -dynamic -shared -fPIC $GHC_FLINKRTS \
               -L"$NGX_MODULE_PATH" -lngx_log_plugin -ddump-splices \
               ngx_log.hs -o ngx_log.so -fforce-recomp
           export TEST_NGINX_LLIB_DIR="$(pwd)"
+          cd -
+
+          cd test
           LD_LIBRARY_PATH="$NGX_MODULE_PATH" prove -r t
           cd -
 

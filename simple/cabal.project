@@ -1,0 +1,3 @@
+-- note that ngx-export-log will be taken from Hackage
+packages: ngx-log.cabal
+

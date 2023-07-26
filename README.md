@@ -258,17 +258,13 @@ Building and installation
 -------------------------
 
 The plugin contains Haskell and C parts, and thus it requires *ghc*, *cabal*,
-*gcc*, and a directory with the Nginx sources.
+*gcc*, and a directory with the Nginx sources. The build tool also requires
+[*patchelf*](https://github.com/NixOS/patchelf),
+[*hslibdeps*](https://github.com/lyokha/nginx-haskell-module/blob/master/utils/README.md#utility-hslibdeps),
+and [*cabal-plan*](https://hackage.haskell.org/package/cabal-plan).
 
-To install module *NgxExport.Log*, run
-
-```ShellSession
-$ cabal v1-install
-```
-
-(you may prefer the *new-style* cabal command *v2-install*).
-
-Then go to the directory with the Nginx source code,
+Let's first install the Nginx module. For this, go to the directory with the
+Nginx source code,
 
 ```ShellSession
 $ cd /path/to/nginx/sources
@@ -281,10 +277,12 @@ $ ./configure --add-dynamic-module=/path/to/nginx-log-plugin/sources --add-dynam
 $ make modules
 ```
 
-and install *ngx_log_plugin.so* being a superuser.
+and install *ngx_log_plugin.so*.
 
 ```ShellSession
-# cp objs/ngx_log_plugin.so /var/lib/nginx/hslibs/libngx_log_plugin.so
+$ export NGX_HS_INSTALL_DIR=/var/lib/nginx
+$ sudo install -d $NGX_HS_INSTALL_DIR
+$ sudo cp objs/ngx_log_plugin.so $NGX_HS_INSTALL_DIR/libngx_log_plugin.so
 ```
 
 Notice that we added prefix *lib* to the module's name!
@@ -293,53 +291,36 @@ For using directives `log` and `log ultimate`, the dynamic module
 *ngx_log_plugin_module* must also be installed.
 
 ```ShellSession
-# cp objs/ngx_log_plugin_module.so /var/lib/nginx/modules/
+$ sudo install -d $NGX_HS_INSTALL_DIR/modules
+$ sudo cp objs/ngx_log_plugin_module.so $NGX_HS_INSTALL_DIR/modules
 ```
 
-When building a custom library (such as *ngx_log.hs* from the example above),
-import the Haskell module.
-
-```haskell
-import NgxExport.Log ()
-```
-
-The custom library must be linked against the C code.
+Now let's build the Haskell code.
 
 ```ShellSession
-$ export NGX_MODULE_PATH=/var/lib/nginx/hslibs
-$ ghc -Wall -O2 -dynamic -shared -fPIC -flink-rts -threaded -L$NGX_MODULE_PATH -lngx_log_plugin custom.hs -o custom.so -fforce-recomp
+$ cd simple
 ```
 
-Note that in ghc older than *8.10.6*, options *-flink-rts -threaded* must be
-replaced with option *-lHSrts_thr-ghc&dollar;(ghc --numeric-version)*.
-
-It's time to collect all dependent libraries, patch *custom.so* by injecting
-correct *rpath* values, and install everything. The custom library can be
-patched by utility
-[*hslibdeps*](https://github.com/lyokha/nginx-haskell-module/blob/master/utils/README.md#utility-hslibdeps).
+Then
 
 ```ShellSession
-$ export HSLIBS_INSTALL_DIR=/var/lib/nginx/hslibs
-$ hslibdeps -t $HSLIBS_INSTALL_DIR custom.so
+$ make PREFIX=$NGX_HS_INSTALL_DIR
+$ sudo make PREFIX=$NGX_HS_INSTALL_DIR install
 ```
 
-If values of *HSLIBS_INSTALL_DIR* and *NGX_MODULE_PATH* differ then the second
-path must be added too.
+or simply
 
 ```ShellSession
-$ hslibdeps -t $NGX_MODULE_PATH custom.so
+$ make
+$ sudo make install
 ```
 
-Copy library *custom.so* into directory */var/lib/nginx/* (this must correspond
-to the directory specified in Nginx directive *haskell load*) being a superuser.
+if installation directory is */var/lib/nginx/*.
+
+In ghc older than *8.10.6*, build with
 
 ```ShellSession
-# cp custom.so /var/lib/nginx
-```
-
-Then copy all dependent Haskell libraries into the target directory.
-
-```ShellSession
-# cp -v .hslibs/* $HSLIBS_INSTALL_DIR
+$ make LINKRTS=-lHSrts_thr-ghc$(ghc --numeric-version)
+$ sudo make install
 ```
 
