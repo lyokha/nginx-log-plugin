@@ -257,7 +257,7 @@ that there is no high-level log directive for writing into the global log.
 Building and installation
 -------------------------
 
-The plugin contains Haskell and C parts, and thus it requires *ghc*, *cabal*,
+The plugin contains Haskell and C parts, and thus, it requires *ghc*, *cabal*,
 *gcc*, and a directory with the Nginx sources. The build tool also requires
 [*patchelf*](https://github.com/NixOS/patchelf),
 [*hslibdeps*](https://github.com/lyokha/nginx-haskell-module/blob/master/utils/README.md#utility-hslibdeps),
@@ -298,6 +298,7 @@ $ sudo cp objs/ngx_log_plugin_module.so $NGX_HS_INSTALL_DIR/modules
 Now let's build the Haskell code.
 
 ```ShellSession
+$ cd -
 $ cd simple
 ```
 
@@ -317,10 +318,9 @@ $ sudo make install
 
 if installation directory is */var/lib/nginx/*.
 
-In ghc older than *8.10.6*, build with
+With ghc older than *8.10.6*, build with
 
 ```ShellSession
 $ make LINKRTS=-lHSrts_thr-ghc$(ghc --numeric-version)
-$ sudo make install
 ```
 
