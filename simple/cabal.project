@@ -1,5 +1,4 @@
 -- note that ngx-export-log will be taken from Hackage;
 -- to build ngx-export-log locally, add ../ngx-export-log.cabal to packages
--- and build with 'make INPLACE=1'
 packages: ngx-log.cabal
 
