@@ -324,3 +324,8 @@ With ghc older than *8.10.6*, build with
 $ make LINKRTS=-lHSrts_thr-ghc$(ghc --numeric-version)
 ```
 
+By default, module *ngx-export-log* gets installed from *Hackage*. To build it
+locally, augment stanza *packages* inside
+[*cabal.project*](simple/cabal.project) according to the commentary attached to
+it.
+
