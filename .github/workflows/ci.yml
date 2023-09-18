@@ -78,7 +78,7 @@ jobs:
           fi
           cabal v1-install ngx-export-tools
 
-          if [ "$NGXVER" == head ]
+          if [ "$NGXVER" = head ]
           then
               git clone https://github.com/nginx/nginx.git nginx-head
           else
@@ -86,7 +86,7 @@ jobs:
                   tar xzvf nginx-${NGXVER}.tar.gz
           fi
 
-          if [ "$NGXHMVER" == head ]
+          if [ "$NGXHMVER" = head ]
           then
               git clone https://github.com/lyokha/nginx-haskell-module.git \
                   nginx-haskell-module-head
@@ -99,7 +99,7 @@ jobs:
           git clone https://github.com/openresty/echo-nginx-module.git
 
           cd nginx-${NGXVER}/
-          if [ "$NGXVER" == head ]
+          if [ "$NGXVER" = head ]
           then
               NGX_CONFIGURE=./auto/configure
           else
