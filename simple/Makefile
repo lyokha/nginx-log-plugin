@@ -22,7 +22,7 @@ DISTDIR := dist
 DISTV2DIR := dist-newstyle
 
 INPLACE := $(shell grep -q '^packages:.*\.\./ngx-export-log' \
-	               cabal.project && echo 1 || echo 0)
+                       cabal.project && echo 1 || echo 0)
 
 all: $(DISTR)
 
