@@ -8,7 +8,7 @@ description: Native Nginx logging from configuration files and Haskell handlers.
 homepage:              http://github.com/lyokha/nginx-log-plugin
 license:               BSD3
 license-file:          LICENSE
-extra-source-files:    Changelog.md
+extra-doc-files:       Changelog.md
 author:                Alexey Radkov <alexey.radkov@gmail.com>
 maintainer:            Alexey Radkov <alexey.radkov@gmail.com>
 stability:             stable
@@ -16,6 +16,10 @@ copyright:             2022 Alexey Radkov
 category:              Network
 build-type:            Simple
 cabal-version:         1.20
+
+source-repository head
+  type:                git
+  location:            https://github.com/lyokha/nginx-log-plugin.git
 
 library
   default-language:    Haskell2010
