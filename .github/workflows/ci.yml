@@ -65,8 +65,6 @@ jobs:
           CABALVER: ${{ matrix.cabal }}
           NGXHMVER: ${{ matrix.nginx-haskell-module }}
         run: |
-          set -e
-
           cabal --version
           echo "$(ghc --version) "`
               `"[$(ghc --print-project-git-commit-id 2>/dev/null || echo '?')]"
@@ -139,6 +137,4 @@ jobs:
           cd test
           LD_LIBRARY_PATH="$NGX_MODULE_PATH" prove -r t
           cd -
-
-          set +e
 
