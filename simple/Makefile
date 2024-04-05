@@ -9,6 +9,7 @@ MACHINE := $(shell uname -m)
 KERNEL := $(shell uname -s | tr A-Z a-z)
 
 PKGDISTR := ngx-export-distribution
+NHMTOOL := nhm-tool
 
 SRC := $(NAME).hs
 LIB := $(NAME).so
@@ -18,8 +19,7 @@ DISTR := $(PKGNAME)-$(PKGVER).tar.gz
 GHCVER := $(shell ghc --numeric-version)
 GHCENV := .ghc.environment.$(MACHINE)-$(KERNEL)-$(GHCVER)
 DEPLIBS := $(MACHINE)-$(KERNEL)-ghc-$(GHCVER)
-DISTDIR := dist
-DISTV2DIR := dist-newstyle
+BUILDDIR := dist-nhm
 
 INPLACE := $(shell grep -q '^packages:.*\.\./ngx-export-log' \
                        cabal.project && echo 1 || echo 0)
@@ -27,21 +27,31 @@ INPLACE := $(shell grep -q '^packages:.*\.\./ngx-export-log' \
 all: $(DISTR)
 
 $(DISTR): $(SRC)
-	cabal install --lib --only-dependencies --package-env .
+	cabal install --builddir="$(BUILDDIR)" --lib --only-dependencies \
+	  --package-env .
 ifeq ($(INPLACE),1)
-	cabal build ngx-export-log
-	echo "package-db $$(pwd)/$(DISTV2DIR)/packagedb/ghc-$(GHCVER)" >> \
+	cabal build --builddir="$(BUILDDIR)" ngx-export-log
+	echo "package-db $$(pwd)/$(BUILDDIR)/packagedb/ghc-$(GHCVER)" >> \
 	  $(GHCENV)
 endif
 	sed -i 's/\(^package-id \)/--\1/' $(GHCENV)
+	if ! command -v $(NHMTOOL) >/dev/null; then \
+	  PATH=$$(dirname $$(cabal list-bin $(PKGDISTR))):$$PATH; \
+	fi; \
+	$(NHMTOOL) deps $(PKGNAME) -d "$(BUILDDIR)" >> $(GHCENV); \
 	runhaskell --ghc-arg=-package=base \
 	  --ghc-arg=-package=$(PKGDISTR) Setup.hs configure \
+	  --builddir="$(BUILDDIR)" \
 	  --package-db=clear --package-db=global \
 	  $$(sed -n 's/^\(package-db\)\s\+/--\1=/p' $(GHCENV)) \
-	  --prefix=$(PREFIX)
-	nhm-tool deps $(PKGNAME) >> $(GHCENV)
+	  $$(sed -n 's/^package-id\s\+\(.*\)'` \
+	    `'\(-\([0-9]\+\.\)*[0-9]\+\($$\|-.*\)\)/'` \
+	    `'--dependency=\1=\1\2/p' \
+	    $(GHCENV)) \
+	  --prefix=$(PREFIX); \
 	runhaskell --ghc-arg=-package=base \
 	  --ghc-arg=-package=$(PKGDISTR) Setup.hs build \
+	  --builddir="$(BUILDDIR)" \
 	  --ghc-options="$(SRC) -o $(LIB) -L$(PREFIX) -l$(PLUGNAME) $(LINKRTS)"
 
 install: $(DISTR)
@@ -52,7 +62,7 @@ install: $(DISTR)
 .PHONY: clean
 
 clean:
-	rm -rf $(DISTDIR) $(DISTV2DIR) $(DEPLIBS)
+	rm -rf $(BUILDDIR) $(DEPLIBS)
 	rm -f $(GHCENV) $(STUB) $(NAME).hi $(NAME).o
 	rm -f $(LIB)
 
