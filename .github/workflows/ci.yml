@@ -68,13 +68,7 @@ jobs:
           cabal --version
           echo "$(ghc --version) "`
               `"[$(ghc --print-project-git-commit-id 2>/dev/null || echo '?')]"
-          if echo "$CABALVER" | grep -q '^3\.[0-5]\.'
-          then
-              cabal v1-update
-          else
-              cabal v2-update
-          fi
-          cabal v1-install ngx-export-tools
+          cabal update
 
           if [ "$NGXVER" = head ]
           then
@@ -116,12 +110,6 @@ jobs:
           export PATH="$NGX_MODULE_PATH:$PATH"
           export TEST_NGINX_LOAD_MODULES="$NGX_MODULE_PATH/ngx_log_plugin_module.so"
           cd -
-
-          cabal v1-configure
-          cabal v1-build -v --ghc-options=-ddump-splices
-          cabal v2-sdist --builddir=dist
-          SRC_TGZ=$(cabal info . | awk '{print $2; exit}').tar.gz &&
-              (cd dist/sdist && cabal v1-install --force-reinstalls "$SRC_TGZ")
 
           echo "$GHCVER" | grep -q '^8\.' &&
               LINKRTS="LINKRTS=-lHSrts_thr-ghc$(ghc --numeric-version)"
