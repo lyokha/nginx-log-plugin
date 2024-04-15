@@ -96,6 +96,9 @@ jobs:
           fi
           git clone https://github.com/openresty/echo-nginx-module.git
 
+          export TEST_NGINX_LLIB_DIR="$(pwd)/var/lib/nginx"
+          install -d "$TEST_NGINX_LLIB_DIR"
+
           cd nginx-${NGXVER}/
           if [ "$NGXVER" = head ]
           then
@@ -108,7 +111,7 @@ jobs:
                          --add-dynamic-module=.. \
                          --add-dynamic-module=../module
           make -j2
-          cp objs/ngx_log_plugin.so objs/libngx_log_plugin.so
+          cp objs/ngx_log_plugin.so "$TEST_NGINX_LLIB_DIR/libngx_log_plugin.so"
           export NGX_MODULE_PATH="$(pwd)/objs"
           export PATH="$NGX_MODULE_PATH:$PATH"
           export TEST_NGINX_LOAD_MODULES="$NGX_MODULE_PATH/ngx_log_plugin_module.so"
@@ -120,15 +123,13 @@ jobs:
           SRC_TGZ=$(cabal info . | awk '{print $2; exit}').tar.gz &&
               (cd dist/sdist && cabal v1-install --force-reinstalls "$SRC_TGZ")
 
-          export TEST_NGINX_LLIB_DIR="$(pwd)/var/lib/nginx"
-          install -d "$TEST_NGINX_LLIB_DIR"
-
           echo "$GHCVER" | grep -q '^8\.' &&
               LINKRTS="LINKRTS=-lHSrts_thr-ghc$(ghc --numeric-version)"
 
           cd simple
           sed -i 's/^packages: .\+/& ..\/ngx-export-log.cabal/' cabal.project
-          # FIXME: constraints reflect transient Hackage inconsistencies!
+          # FIXME: the following constraints mitigate transient inconsistencies
+          # on Hackage!
           echo 'constraints: filepath < 1.5' >> cabal.project
           make PREFIX="$TEST_NGINX_LLIB_DIR" INPLACE=1 $LINKRTS
           make PREFIX="$TEST_NGINX_LLIB_DIR" install
