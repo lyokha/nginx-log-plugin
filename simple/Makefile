@@ -13,8 +13,13 @@ NHMTOOL := nhm-tool
 
 SRC := $(NAME).hs
 LIB := $(NAME).so
-STUB := $(NAME)_stub.h
 DISTR := $(PKGNAME)-$(PKGVER).tar.gz
+
+OBJS := $(SRC:.hs=.o)
+HIOBJS := $(SRC:.hs=.hi)
+DYNOBJS := $(SRC:.hs=.dyn_o)
+DYNHIOBJS := $(SRC:.hs=.dyn_hi)
+STUBS := $(SRC:.hs=_stub.h)
 
 GHCVER := $(shell ghc --numeric-version)
 GHCENV := .ghc.environment.$(MACHINE)-$(KERNEL)-$(GHCVER)
@@ -24,9 +29,13 @@ BUILDDIR := dist-nhm
 INPLACE := $(shell grep -q '^packages:.*\.\./ngx-export-log' \
                        cabal.project && echo 1 || echo 0)
 
+.PHONY: all env clean
+
 all: $(DISTR)
 
-$(DISTR): $(SRC)
+env: $(GHCENV)
+
+$(GHCENV): cabal.project $(PKGNAME).cabal
 	cabal install --builddir="$(BUILDDIR)" --lib --only-dependencies \
 	  --package-env .
 ifeq ($(INPLACE),1)
@@ -35,10 +44,19 @@ ifeq ($(INPLACE),1)
 	  $(GHCENV)
 endif
 	sed -i 's/\(^package-id \)/--\1/' $(GHCENV)
-	if ! command -v $(NHMTOOL) >/dev/null; then \
-	  PATH=$$(dirname $$(cabal list-bin $(PKGDISTR))):$$PATH; \
+	if test "$(NHMTOOL)" = nhm-tool && ! command -v nhm-tool >/dev/null; \
+	then \
+	  PATH=$$(dirname \
+	    $$(cabal list-bin $(PKGDISTR) --builddir="$(BUILDDIR)")):$$PATH; \
 	fi; \
-	$(NHMTOOL) deps $(PKGNAME) -d "$(BUILDDIR)" >> $(GHCENV); \
+	$(NHMTOOL) deps $(PKGNAME) -d "$(BUILDDIR)" >> $(GHCENV)
+
+$(DISTR): $(GHCENV) $(SRC)
+	if test "$(NHMTOOL)" = nhm-tool && ! command -v nhm-tool >/dev/null; \
+	then \
+	  PATH=$$(dirname \
+	    $$(cabal list-bin $(PKGDISTR) --builddir="$(BUILDDIR)")):$$PATH; \
+	fi; \
 	runhaskell --ghc-arg=-package=base \
 	  --ghc-arg=-package=$(PKGDISTR) Setup.hs configure \
 	  --builddir="$(BUILDDIR)" \
@@ -59,13 +77,11 @@ install: $(DISTR)
 	tar xf $(DISTR) -C $(PREFIX) --no-same-owner
 	install $(PREFIX)/lib$(PLUGNAME).so $(PREFIX)/$(DEPLIBS)
 
-.PHONY: clean
-
 clean:
 	rm -rf $(BUILDDIR) $(DEPLIBS)
-	rm -f $(GHCENV) $(STUB) $(NAME).hi $(NAME).o
+	rm -f $(OBJS) $(HIOBJS) $(DYNOBJS) $(DYNHIOBJS) $(STUBS)
 	rm -f $(LIB)
 
 clean-all: clean
-	rm -f $(DISTR)
+	rm -f $(GHCENV) $(DISTR)
 

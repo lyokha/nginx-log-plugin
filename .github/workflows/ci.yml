@@ -9,8 +9,8 @@ jobs:
     continue-on-error: ${{ matrix.experimental }}
     strategy:
       matrix:
-        ghc: ['8.0', '8.2', '8.4', '8.6', '8.8', '8.10', '9.0']
-        cabal: ['3.6']
+        ghc: ['8.2', '8.4', '8.6', '8.8', '8.10', '9.0']
+        cabal: ['3.8']
         nginx: [1.18.0]
         nginx-haskell-module: [3.2.2]
         experimental: [false]
@@ -41,7 +41,7 @@ jobs:
             nginx-haskell-module: head
             experimental: false
           - ghc: '9.2'
-            cabal: '3.6'
+            cabal: '3.8'
             nginx: 1.20.2
             nginx-haskell-module: head
             experimental: false
@@ -120,18 +120,18 @@ jobs:
           SRC_TGZ=$(cabal info . | awk '{print $2; exit}').tar.gz &&
               (cd dist/sdist && cabal v1-install --force-reinstalls "$SRC_TGZ")
 
-          if echo "$GHCVER" | grep -q '^[0-8]\.'
-          then
-              GHC_FLINKRTS=-lHSrts_thr-ghc"$(ghc --numeric-version)"
-          else
-              GHC_FLINKRTS="-flink-rts -threaded"
-          fi
+          export TEST_NGINX_LLIB_DIR="$(pwd)/var/lib/nginx"
+          install -d "$TEST_NGINX_LLIB_DIR"
+
+          echo "$GHCVER" | grep -q '^8\.' &&
+              LINKRTS="LINKRTS=-lHSrts_thr-ghc$(ghc --numeric-version)"
 
           cd simple
-          ghc -Wall -O2 -dynamic -shared -fPIC $GHC_FLINKRTS \
-              -L"$NGX_MODULE_PATH" -lngx_log_plugin -ddump-splices \
-              ngx_log.hs -o ngx_log.so -fforce-recomp
-          export TEST_NGINX_LLIB_DIR="$(pwd)"
+          sed -i 's/^packages: .\+/& ..\/ngx-export-log.cabal/' cabal.project
+          # FIXME: constraints reflect transient Hackage inconsistencies!
+          echo 'constraints: filepath < 1.5' >> cabal.project
+          make PREFIX="$TEST_NGINX_LLIB_DIR" INPLACE=1 $LINKRTS
+          make PREFIX="$TEST_NGINX_LLIB_DIR" install
           cd -
 
           cd test
