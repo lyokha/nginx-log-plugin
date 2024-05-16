@@ -116,9 +116,6 @@ jobs:
 
           cd simple
           sed -i 's/^packages: .\+/& ..\/ngx-export-log.cabal/' cabal.project
-          # FIXME: the following constraints mitigate transient inconsistencies
-          # on Hackage!
-          echo 'constraints: filepath < 1.5' >> cabal.project
           make PREFIX="$TEST_NGINX_LLIB_DIR" INPLACE=1 $LINKRTS
           make PREFIX="$TEST_NGINX_LLIB_DIR" install
           cd -
