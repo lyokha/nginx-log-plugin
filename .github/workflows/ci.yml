@@ -25,11 +25,6 @@ jobs:
             nginx: 1.28.0
             nginx-haskell-module: head
             experimental: true
-          - ghc: '9.12'
-            cabal: '3.12'
-            nginx: 1.28.0
-            nginx-haskell-module: head
-            experimental: true
           - ghc: '9.10'
             cabal: '3.12'
             nginx: 1.26.3
@@ -39,17 +34,27 @@ jobs:
             cabal: '3.10'
             nginx: 1.26.3
             nginx-haskell-module: head
-            experimental: false
+            experimental: true
+          - ghc: '9.8'
+            cabal: '3.8'
+            nginx: 1.26.3
+            nginx-haskell-module: head
+            experimental: true
           - ghc: '9.6'
             cabal: '3.10'
             nginx: 1.24.0
             nginx-haskell-module: head
-            experimental: false
+            experimental: true
+          - ghc: '9.6'
+            cabal: '3.8'
+            nginx: 1.24.0
+            nginx-haskell-module: head
+            experimental: true
           - ghc: '9.4'
             cabal: '3.8'
             nginx: 1.24.0
             nginx-haskell-module: head
-            experimental: false
+            experimental: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
