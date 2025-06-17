@@ -15,7 +15,7 @@ jobs:
         nginx-haskell-module: [3.4.2]
         experimental: [false]
         include:
-          - ghc: '9.10'
+          - ghc: '9.12'
             cabal: head
             nginx: head
             nginx-haskell-module: head
@@ -34,7 +34,7 @@ jobs:
             cabal: '3.12'
             nginx: 1.26.3
             nginx-haskell-module: head
-            experimental: false
+            experimental: true
           - ghc: '9.8'
             cabal: '3.10'
             nginx: 1.26.3
