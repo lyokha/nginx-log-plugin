@@ -34,7 +34,6 @@ jobs:
             cabal: '3.12'
             nginx: 1.26.3
             nginx-haskell-module: head
-            # this clause will supposedly fail
             experimental: true
           - ghc: '9.8.1'
             cabal: '3.10'
@@ -45,7 +44,11 @@ jobs:
             cabal: '3.10'
             nginx: 1.26.3
             nginx-haskell-module: head
-            # this clause will supposedly fail
+            experimental: false
+          - ghc: '9.8.4'
+            cabal: '3.10'
+            nginx: 1.26.3
+            nginx-haskell-module: head
             experimental: true
           - ghc: '9.6'
             cabal: '3.10'
