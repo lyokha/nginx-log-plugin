@@ -21,11 +21,11 @@ jobs:
             nginx-haskell-module: head
             experimental: true
           - ghc: '9.12'
-            cabal: '3.14'
+            cabal: '3.16'
             nginx: 1.28.0
             nginx-haskell-module: head
             experimental: true
-          - ghc: '9.10.1'
+          - ghc: '9.10.3'
             cabal: '3.12'
             nginx: 1.26.3
             nginx-haskell-module: head
