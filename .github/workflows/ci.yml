@@ -110,7 +110,7 @@ jobs:
           cp objs/ngx_log_plugin.so "$TEST_NGINX_LLIB_DIR/libngx_log_plugin.so"
           NGX_MODULE_PATH="$(pwd)/objs"
           echo "$NGX_MODULE_PATH" >> "$GITHUB_PATH"
-          echo "TEST_NGINX_LLIB_DIR=$TEST_NGINX_LLLIB_DIR" >> "$GITHUB_ENV"
+          echo "TEST_NGINX_LLIB_DIR=$TEST_NGINX_LLIB_DIR" >> "$GITHUB_ENV"
           echo "TEST_NGINX_LOAD_MODULES="`
                   `"$NGX_MODULE_PATH/ngx_log_plugin_module.so" >> "$GITHUB_ENV"
 
