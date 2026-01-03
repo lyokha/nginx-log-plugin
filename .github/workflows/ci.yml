@@ -11,42 +11,37 @@ jobs:
       matrix:
         # builds with ghc 9.8.4, 9.10.2, 9.12.1, 9.12.2 fail due to issue
         # https://gitlab.haskell.org/ghc/ghc/-/issues/26136
-        ghc: ['8.6', '8.8', '8.10', '9.0', '9.2']
+        ghc: ['8.8', '8.10', '9.0', '9.2']
         cabal: ['3.8']
         nginx: [1.22.1]
         nginx-haskell-module: [3.4.3]
         experimental: [false]
         include:
-          - ghc: '9.12.2'
+          - ghc: '9.14'
             cabal: head
             nginx: head
             nginx-haskell-module: head
             experimental: true
-          - ghc: '9.12.2'
+          - ghc: '9.14'
             cabal: '3.16'
-            nginx: 1.28.0
+            nginx: 1.28.1
             nginx-haskell-module: head
             experimental: true
-          - ghc: '9.10.3'
+          - ghc: '9.12'
+            cabal: '3.16'
+            nginx: 1.28.1
+            nginx-haskell-module: head
+            experimental: true
+          - ghc: '9.10'
             cabal: '3.14'
             nginx: 1.26.3
             nginx-haskell-module: head
             experimental: false
-          - ghc: '9.10.2'
-            cabal: '3.14'
-            nginx: 1.26.3
-            nginx-haskell-module: head
-            experimental: true
           - ghc: '9.8.2'
             cabal: '3.12'
             nginx: 1.26.3
             nginx-haskell-module: head
             experimental: false
-          - ghc: '9.8.4'
-            cabal: '3.12'
-            nginx: 1.26.3
-            nginx-haskell-module: head
-            experimental: true
           - ghc: '9.6'
             cabal: '3.10'
             nginx: 1.24.0
@@ -59,35 +54,30 @@ jobs:
             experimental: false
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Install GHC and Cabal
         uses: haskell-actions/setup@v2
         with:
           ghc-version: ${{ matrix.ghc }}
           cabal-version: ${{ matrix.cabal }}
+          cabal-update: true
       - name: Install prove
         uses: perl-actions/install-with-cpanm@v1.7
         with:
           install: "Test::Nginx"
           tests: false
-      - name: Install and test
+
+      - name: Build Nginx modules
         env:
-          GHCVER: ${{ matrix.ghc }}
           NGXVER: ${{ matrix.nginx }}
-          CABALVER: ${{ matrix.cabal }}
           NGXHMVER: ${{ matrix.nginx-haskell-module }}
         run: |
-          cabal --version
-          echo "$(ghc --version) "`
-              `"[$(ghc --print-project-git-commit-id 2>/dev/null || echo '?')]"
-          cabal update
-
           if [ "$NGXVER" = head ]
           then
               git clone https://github.com/nginx/nginx.git nginx-head
           else
-              wget http://nginx.org/download/nginx-${NGXVER}.tar.gz &&
-                  tar xzvf nginx-${NGXVER}.tar.gz
+              wget http://nginx.org/download/nginx-"$NGXVER".tar.gz &&
+                  tar xzvf nginx-"$NGXVER".tar.gz
           fi
 
           if [ "$NGXHMVER" = head ]
@@ -96,32 +86,41 @@ jobs:
                   nginx-haskell-module-head
           else
               wget "https://github.com/lyokha/nginx-haskell-module/"`
-                  `"archive/refs/tags/${NGXHMVER}.tar.gz" \
-                      -O nginx-haskell-module-${NGXHMVER}.tar.gz &&
-                      tar xzvf nginx-haskell-module-${NGXHMVER}.tar.gz
+                  `"archive/refs/tags/$NGXHMVER.tar.gz" \
+                      -O nginx-haskell-module-"$NGXHMVER".tar.gz &&
+                      tar xzvf nginx-haskell-module-"$NGXHMVER".tar.gz
           fi
           git clone https://github.com/openresty/echo-nginx-module.git
 
-          export TEST_NGINX_LLIB_DIR="$(pwd)/var/lib/nginx"
+          TEST_NGINX_LLIB_DIR="$(pwd)/var/lib/nginx"
           install -d "$TEST_NGINX_LLIB_DIR"
 
-          cd nginx-${NGXVER}/
+          cd nginx-"$NGXVER"
           if [ "$NGXVER" = head ]
           then
               NGX_CONFIGURE=./auto/configure
           else
               NGX_CONFIGURE=./configure
           fi
-          $NGX_CONFIGURE --add-module=../nginx-haskell-module-${NGXHMVER} \
+          $NGX_CONFIGURE --add-module=../nginx-haskell-module-"$NGXHMVER" \
                          --add-module=../echo-nginx-module \
                          --add-dynamic-module=.. \
                          --add-dynamic-module=../module
           make -j2
           cp objs/ngx_log_plugin.so "$TEST_NGINX_LLIB_DIR/libngx_log_plugin.so"
-          export NGX_MODULE_PATH="$(pwd)/objs"
-          export PATH="$NGX_MODULE_PATH:$PATH"
-          export TEST_NGINX_LOAD_MODULES="$NGX_MODULE_PATH/ngx_log_plugin_module.so"
-          cd -
+          NGX_MODULE_PATH="$(pwd)/objs"
+          echo "$NGX_MODULE_PATH" >> "$GITHUB_PATH"
+          echo "TEST_NGINX_LLIB_DIR=$TEST_NGINX_LLLIB_DIR" >> "$GITHUB_ENV"
+          echo "TEST_NGINX_LOAD_MODULES="`
+                  `"$NGX_MODULE_PATH/ngx_log_plugin_module.so" >> "$GITHUB_ENV"
+
+      - name: Build and run tests
+        env:
+          GHCVER: ${{ matrix.ghc }}
+        run: |
+          cabal --version
+          echo "$(ghc --version) "`
+              `"[$(ghc --print-project-git-commit-id 2>/dev/null || echo '?')]"
 
           echo "$GHCVER" | grep -q '^8\.' &&
               LINKRTS="LINKRTS=-lHSrts_thr-ghc$(ghc --numeric-version)"
@@ -133,6 +132,5 @@ jobs:
           cd -
 
           cd test
-          LD_LIBRARY_PATH="$NGX_MODULE_PATH" prove -r t
-          cd -
+          prove -r t
 
