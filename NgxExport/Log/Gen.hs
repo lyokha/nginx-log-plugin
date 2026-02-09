@@ -1,4 +1,4 @@
-{-# LANGUAGE CPP, TemplateHaskell, TupleSections, LambdaCase #-}
+{-# LANGUAGE CPP, TemplateHaskell, TupleSections #-}
 
 module NgxExport.Log.Gen where
 
@@ -18,10 +18,7 @@ import           Data.Char
 
 do
     TyConI (DataD _ _ _ _ lCs _) <- reify ''LogLevel
-    let lCons = map (\case
-                         NormalC con [] -> con
-                         _ -> undefined
-                    ) lCs
+    let lCons = [con | NormalC con [] <- lCs]
         flr = mkName "logR"
         lCons' = map ((, 'logG) . (id &&& toFuncName . nameBase)) lCons ++
             map ((, flr) . (id &&& toFuncName . (++ "R") . nameBase)) lCons

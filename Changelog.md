@@ -1,3 +1,8 @@
+### 1.5.3
+
+- Minor internal improvement, drop *LambdaCase* extension in module
+  *NgxExport.Log.Gen*.
+
 ### 1.5.2
 
 - Foreign calls were extracted in a separate module.
