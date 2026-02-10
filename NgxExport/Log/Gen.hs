@@ -20,11 +20,9 @@ import           Data.Char
 do
     TyConI (DataD _ _ _ _ lCs _) <- reify ''LogLevel
     let lCons = uncurry (++) $
-            (map ((, 'logG) . (id &&& toFuncName . nameBase))
-             &&& map ((, flr) . (id &&& toFuncName . (++ "R") . nameBase))
-            ) [con | NormalC con [] <- lCs]
+            (map (, 'logG) &&& map ((, 'logR) . second (++ "R")))
+            [(id &&& toFuncName . nameBase) con | NormalC con [] <- lCs]
         toFuncName = maybe undefined (uncurry (:) . first toLower) . uncons
-        flr = mkName "logR"
         flf = mkName "logFuncs"
     sequence $
         [sigD flf [t|[String]|]
@@ -47,7 +45,7 @@ do
 #if MIN_VERSION_template_haskell(2,18,0)
                          (Just $ "Logs a message with severity '" ++
                              nameBase con ++ "' to the " ++
-                                 (if f == flr
+                                 (if f == 'logR
                                       then "request's "
                                       else "global "
                                  ) ++ "Nginx log.\n\n" ++
