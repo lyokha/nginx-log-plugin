@@ -1,7 +1,10 @@
-### 1.5.3
+### 1.6
 
-- Minor internal improvement, drop *LambdaCase* extension in module
-  *NgxExport.Log.Gen*.
+- Refactor module *NgxExport.Log.Gen*.
+- Add CPP macro *NGX_CSTUB* in module *NgxExport.Log.CLog* to work around the
+  lack of macro *\_\_HADDOCK_VERSION\_\_* in recent Haddock versions. Use this
+  macro in *simple/Makefile*: this must fix building the simple module with
+  documentation for dependencies.
 
 ### 1.5.2
 

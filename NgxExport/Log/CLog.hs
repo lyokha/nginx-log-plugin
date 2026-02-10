@@ -20,23 +20,21 @@ type CLogType = Ptr () -> CUIntPtr -> CString -> CSize -> IO ()
 -- detect that the code is being run by hls or haddock: the tools define their
 -- own C macro declarations __GHCIDE__ and __HADDOCK_VERSION__ respectively. To
 -- prevent interactive linking in ghci, pass one of the two macro declarations
--- in an appropriate option, e.g.
+-- (or macro NGX_CSTUB, see below) in an appropriate option, e.g.
 --
--- cabal repl --ghc-options=-D__GHCIDE__ --repl-options=-fobject-code
+-- cabal repl --ghc-options=-DNGX_CSTUB --repl-options=-fobject-code
+--
+-- In newer haddock releases (as of 2025), option __HADDOCK_VERSION__ gets no
+-- longer set. In this case, build haddocks with
+--
+-- cabal haddock --haddock-for-hackage --haddock-options=--optghc=-DNGX_CSTUB
 
-#if defined(__GHCIDE__) || defined(__HADDOCK_VERSION__)
+#if defined(__GHCIDE__) || defined(__HADDOCK_VERSION__) || defined(NGX_CSTUB)
 #define C_LOG_STUB(f) f :: CLogType; f _ _ _ _ = return ()
-#endif
-
-#if defined(__GHCIDE__) || defined(__HADDOCK_VERSION__)
 C_LOG_STUB(c_log)
-#else
-foreign import ccall unsafe "plugin_ngx_http_haskell_log" c_log :: CLogType
-#endif
-
-#if defined(__GHCIDE__) || defined(__HADDOCK_VERSION__)
 C_LOG_STUB(c_log_r)
 #else
+foreign import ccall unsafe "plugin_ngx_http_haskell_log" c_log :: CLogType
 foreign import ccall unsafe "plugin_ngx_http_haskell_log_r" c_log_r :: CLogType
 #endif
 

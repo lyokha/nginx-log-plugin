@@ -21,7 +21,7 @@ do
     TyConI (DataD _ _ _ _ lCs _) <- reify ''LogLevel
     let lCons = uncurry (++) $
             (map (, 'logG) &&& map ((, 'logR) . second (++ "R")))
-            [(id &&& toFuncName . nameBase) con | NormalC con [] <- lCs]
+            [id &&& toFuncName . nameBase $ con | NormalC con [] <- lCs]
         toFuncName = maybe undefined (uncurry (:) . first toLower) . uncons
         flf = mkName "logFuncs"
     sequence $
@@ -43,14 +43,13 @@ do
                              ) []
                          ]
 #if MIN_VERSION_template_haskell(2,18,0)
-                         (Just $ "Logs a message with severity '" ++
-                             nameBase con ++ "' to the " ++
-                                 (if f == 'logR
-                                      then "request's "
-                                      else "global "
-                                 ) ++ "Nginx log.\n\n" ++
-                                 "This is the core function of the /" ++ fn ++
-                                 "/ handler."
+                         (Just $ let lType | f == 'logR = "request's"
+                                           | otherwise = "global"
+                                 in "Logs a message with severity '" ++
+                                        nameBase con ++ "' to the " ++
+                                        lType ++ " Nginx log.\n\n" ++
+                                        "This is the core function of the /" ++
+                                        fn ++ "/ handler."
                          ) [Just "Log message"]
 #endif
                 ]
