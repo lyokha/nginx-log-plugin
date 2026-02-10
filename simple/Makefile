@@ -41,7 +41,6 @@ GHCENVLNK := .ghc.environment.lnk
 DEPLIBS := $(MACHINE)-$(KERNEL)-$(GHCPUID)
 BUILDDIR := dist-nhm
 SETUPCONFIG := $(BUILDDIR)/setup-config
-HADDOCKCSTUB := --haddock-option=--optghc=-DNGX_CSTUB
 
 INPLACE := $(shell grep -q '^packages:.*\.\./ngx-export-log' \
                        cabal.project && echo 1 || echo 0)
@@ -56,17 +55,17 @@ config: $(SETUPCONFIG)
 
 $(GHCENVLNK): cabal.project $(PKGNAME).cabal
 	rm -f "$(GHCENVLNK)"
-	$(CABAL) install $(HADDOCKCSTUB) --builddir="$(BUILDDIR)" --lib \
-	  --only-dependencies --package-env .
+	$(CABAL) install --builddir="$(BUILDDIR)" --lib --only-dependencies \
+	  --package-env .
 ifeq ($(INPLACE),1)
-	$(CABAL) build $(HADDOCKCSTUB) --builddir="$(BUILDDIR)" ngx-export-log
+	$(CABAL) build --builddir="$(BUILDDIR)" ngx-export-log
 	echo "package-db $$(pwd)/$(BUILDDIR)/packagedb/ghc-$(GHCVER)" >> \
 	  "$(GHCENV)"
 endif
 	sed -i 's/\(^package-id \)/--\1/' "$(GHCENV)"
 	if test "$(NHMTOOL)" = nhm-tool && ! command -v nhm-tool >/dev/null; \
 	then \
-	  PATH=$$(dirname $$($(CABAL) list-bin $(HADDOCKCSTUB) "$(PKGDISTR)" \
+	  PATH=$$(dirname $$($(CABAL) list-bin "$(PKGDISTR)" \
 	    --builddir="$(BUILDDIR)")):$$PATH; \
 	fi; \
 	$(NHMTOOL) deps "$(PKGNAME)" -d "$(BUILDDIR)" >> "$(GHCENV)"
@@ -75,7 +74,7 @@ endif
 $(SETUPCONFIG): $(GHCENVLNK)
 	if test "$(NHMTOOL)" = nhm-tool && ! command -v nhm-tool >/dev/null; \
 	then \
-	  PATH=$$(dirname $$($(CABAL) list-bin $(HADDOCKCSTUB) "$(PKGDISTR)" \
+	  PATH=$$(dirname $$($(CABAL) list-bin "$(PKGDISTR)" \
 	    --builddir="$(BUILDDIR)")):$$PATH; \
 	fi; \
 	runhaskell --ghc-arg=-package=base \
@@ -92,7 +91,7 @@ $(SETUPCONFIG): $(GHCENVLNK)
 $(DISTR): $(SETUPCONFIG) $(SRC)
 	if test "$(NHMTOOL)" = nhm-tool && ! command -v nhm-tool >/dev/null; \
 	then \
-	  PATH=$$(dirname $$($(CABAL) list-bin $(HADDOCKCSTUB) "$(PKGDISTR)" \
+	  PATH=$$(dirname $$($(CABAL) list-bin "$(PKGDISTR)" \
 	    --builddir="$(BUILDDIR)")):$$PATH; \
 	fi; \
 	runhaskell --ghc-arg=-package=base \

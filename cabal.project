@@ -1,0 +1,5 @@
+packages: ngx-export-log.cabal
+
+package ngx-export-log
+  haddock-options: --optghc=-DNGX_CSTUB
+
