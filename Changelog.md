@@ -1,3 +1,7 @@
+### 1.6.1
+
+- Use custom *Setup.hs* to configure Haddock options on build of documentation.
+
 ### 1.6
 
 - Refactor module *NgxExport.Log.Gen*.

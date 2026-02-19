@@ -1,5 +1,5 @@
 name:                  ngx-export-log
-version:               1.6
+version:               1.6.1
 synopsis:    Native Nginx logging from configuration files and Haskell handlers
 description: Native Nginx logging from configuration files and Haskell handlers.
         .
@@ -14,8 +14,12 @@ maintainer:            Alexey Radkov <alexey.radkov@gmail.com>
 stability:             stable
 copyright:             2022-2026 Alexey Radkov
 category:              Network
-build-type:            Simple
-cabal-version:         1.20
+build-type:            Custom
+cabal-version:         2.0
+
+custom-setup
+  setup-depends:       base >= 4.8 && < 5
+                     , Cabal >= 3.0.0.0
 
 source-repository head
   type:                git

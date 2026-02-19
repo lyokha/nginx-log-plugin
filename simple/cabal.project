@@ -2,6 +2,3 @@
 -- to build ngx-export-log locally, add ../ngx-export-log.cabal to packages
 packages: ngx-log.cabal
 
-package ngx-export-log
-  haddock-options: --optghc=-DNGX_CSTUB
-
