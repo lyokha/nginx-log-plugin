@@ -19,7 +19,7 @@ cabal-version:         2.0
 
 custom-setup
   setup-depends:       base >= 4.8 && < 5
-                     , Cabal >= 3.0.0.0
+                     , Cabal >= 3.0.0.0 && < 4
 
 source-repository head
   type:                git
