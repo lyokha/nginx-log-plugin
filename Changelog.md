@@ -1,3 +1,8 @@
+### 1.6.2
+
+- Use *CApiFFI* to avoid interactive linking against C functions with HLS /
+  Haddock / GHCi repl.
+
 ### 1.6.1
 
 - Use custom *Setup.hs* to configure Haddock options on build of documentation.
