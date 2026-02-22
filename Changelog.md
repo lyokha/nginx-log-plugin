@@ -1,3 +1,7 @@
+### 1.6.2.1
+
+- Revert to using C stubs with HLS via CPP macro *\_\_GHCIDE\_\_*.
+
 ### 1.6.2
 
 - Use *CApiFFI* to avoid interactive linking against C functions with HLS /
