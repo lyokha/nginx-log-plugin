@@ -1,3 +1,7 @@
+### 1.6.2.2
+
+- Use type synonym *LazyByteString* from *bytestring &ge; 0.11.2.0*.
+
 ### 1.6.2.1
 
 - Revert to using C stubs with HLS via CPP macro *\_\_GHCIDE\_\_*.

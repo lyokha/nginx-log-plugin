@@ -8,6 +8,7 @@ import           Language.Haskell.TH
 import           Control.Arrow
 import           Data.ByteString (ByteString)
 import qualified Data.ByteString.Lazy as L
+import           Data.ByteString.Lazy (LazyByteString)
 import           Data.List
 import           Data.Char
 
@@ -36,7 +37,7 @@ do
         concatMap
         (\((con, fn), f) ->
              let fl = mkName fn
-             in [sigD fl [t|ByteString -> IO L.ByteString|]
+             in [sigD fl [t|ByteString -> IO LazyByteString|]
                 ,FUND fl [clause [varP $ mkName "msg"]
                              (normalB
                                  [|$(varE f) $(conE con) msg >> return L.empty|]

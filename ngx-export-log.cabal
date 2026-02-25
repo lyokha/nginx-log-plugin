@@ -1,5 +1,5 @@
 name:                  ngx-export-log
-version:               1.6.2.1
+version:               1.6.2.2
 synopsis:    Native Nginx logging from configuration files and Haskell handlers
 description: Native Nginx logging from configuration files and Haskell handlers.
         .
@@ -27,7 +27,7 @@ library
                      , template-haskell >= 2.11.0
                      , ngx-export >= 1.7.1
                      , ngx-export-tools >= 0.4.9.0
-                     , bytestring
+                     , bytestring >= 0.11.2.0
 
   exposed-modules:     NgxExport.Log
   other-modules:       NgxExport.Log.Base
